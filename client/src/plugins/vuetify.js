@@ -1,16 +1,17 @@
-import Vue from 'vue'
-import Vuetify from 'vuetify/lib'
-import 'vuetify/src/stylus/app.styl'
+import Vue from "vue";
+import Vuetify from "vuetify/lib";
+import "vuetify/src/stylus/app.styl";
+import colors from 'vuetify/es5/util/colors'
 
 Vue.use(Vuetify, {
-  iconfont: 'md',
+  iconfont: "md",
   theme: {
-    primary:"#26A69A",
-    secondary:"#80CBC4",
-    accent:'#EF5350',
-    warning:'#D50000',
-    error:'#FFC107',
-    info:'#2979FF',
-    success:'#1B5E20'
+    primary: "#1d3557",
+    secondary: "#457b9d",
+    accent: "#a8dadc",
+    warning: "#FFE66D",
+    error: "#e63946",
+    info: "#f1faee",
+    success: "#4E937A"
   }
-})
+});
