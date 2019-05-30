@@ -1,20 +1,45 @@
 <template>
-  <div>
-    <v-btn color="primary">primary</v-btn>
-    <v-btn color="secondary">secondary</v-btn>
-    <v-btn color="accent">accent</v-btn>
-    <v-btn color="info secondary--text">info</v-btn>
-    <v-btn color="warning">warning</v-btn>
-    <v-btn color="success">success</v-btn>
-    <v-btn color="error">error</v-btn>
+  <v-container>
+     <h1>Home</h1>
+     <ApolloQuery :query="getPostsQuery">
+       <template slot-scope="{ result: { data, loading, error  } }">
+        <div v-if="loading"> loading... </div>
+        <div v-if="error">
+           Oups! Something got wrong
+          <pre>{{ error }}</pre>
+        </div>
+         <ul v-if="data">
+           <li v-for="post in data.getPosts" :key="post._id">
+             {{ post.title }} | {{post.imageUrl}}
+           </li>
 
-  </div>
+         </ul>
+       </template>
+
+     </ApolloQuery>
+  </v-container>
 </template>
 
 <script>
-export default {
-  name: "Home"
-};
-</script>
+  import { gql } from "apollo-boost";
 
-<style scoped></style>
+  export default {
+    name: "home",
+    data(){
+      return {
+        getPostsQuery: gql `
+          query {
+            getPosts {
+              _id
+              title
+              imageUrl
+              description
+              likes
+            }
+          }
+        `
+      }
+    },
+
+  };
+</script>
