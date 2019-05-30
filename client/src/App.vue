@@ -1,10 +1,20 @@
 <template>
   <v-app>
     <!-- Side Navbar -->
-    <v-navigation-drawer app temporary fixed v-model="sideNav" class="secondary">
+    <v-navigation-drawer
+      app
+      temporary
+      fixed
+      v-model="sideNav"
+      class="secondary"
+    >
       <v-toolbar color="secondary" flat dark>
         <v-toolbar-side-icon @click="sideNav = !sideNav"></v-toolbar-side-icon>
-        <router-link to="/" span="tag" style="cursor: pointer; text-decoration: none;">
+        <router-link
+          to="/"
+          span="tag"
+          style="cursor: pointer; text-decoration: none;"
+        >
           <h1 class="white--text title pl-3">VueShare</h1>
         </router-link>
       </v-toolbar>
@@ -12,11 +22,16 @@
 
       <!--Side nav links-->
       <v-list dark>
-        <v-list-tile riple v-for="(item, index) in sideNavItems" :key="index" :to="item.link">
-          <v-list-tile-action >
-            <v-icon>{{item.icon}}</v-icon>
+        <v-list-tile
+          riple
+          v-for="(item, index) in sideNavItems"
+          :key="index"
+          :to="item.link"
+        >
+          <v-list-tile-action>
+            <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
-          <v-list-tile-content >
+          <v-list-tile-content>
             {{ item.title }}
           </v-list-tile-content>
         </v-list-tile>
@@ -25,7 +40,6 @@
 
     <!-- Horizontal Navbar -->
     <v-toolbar fixed color="primary" dark>
-
       <!-- App Title -->
       <v-toolbar-side-icon @click="sideNav = !sideNav"></v-toolbar-side-icon>
       <v-toolbar-title class="hidden-xs-only">
@@ -64,7 +78,7 @@
 
     <!-- App Content -->
     <main class="pt-2 mt-5 fill-height info">
-      <v-container >
+      <v-container>
         <transition name="fade">
           <router-view />
         </transition>
@@ -76,7 +90,7 @@
 <script>
 export default {
   name: "App",
-  data(){
+  data() {
     return {
       sideNav: false,
       horizontalNavItems: [
@@ -85,14 +99,12 @@ export default {
         { icon: "create", title: "Sign Up", link: "/signup" }
       ],
       sideNavItems: [
-        {icon: "chat", title: "Posts", link: "/posts"},
-        {icon: "lock_open", title: "Sign In", link: "/signin"},
-        {icon: "create", title: "Sign Up", link: "/signup"}
-      ],
-    }
-
+        { icon: "chat", title: "Posts", link: "/posts" },
+        { icon: "lock_open", title: "Sign In", link: "/signin" },
+        { icon: "create", title: "Sign Up", link: "/signup" }
+      ]
+    };
   }
-
 };
 </script>
 <style lang="stylus">
@@ -108,5 +120,4 @@ export default {
 .fade-leave-active
   opacity 0
   transform translateX(-25px)
-
 </style>

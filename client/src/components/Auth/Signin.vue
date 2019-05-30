@@ -1,15 +1,13 @@
 <template>
-    <v-container>
-        <h1>Signin</h1>
-    </v-container>
+  <v-container>
+    <h1>Signin</h1>
+  </v-container>
 </template>
 
 <script>
-    export default {
-        name: "Signin"
-    }
+export default {
+  name: "Signin"
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
