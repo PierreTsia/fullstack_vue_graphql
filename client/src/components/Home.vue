@@ -1,7 +1,7 @@
 <template>
   <v-container text-xs-center>
     <v-layout row v-show="postsAreLoading">
-      <v-container fill-height>
+      <v-container>
         <v-flex xs12>
           <v-progress-circular
             color="secondary"
@@ -34,6 +34,7 @@ export default {
   data() {
     return {};
   },
+
   methods: {
     ...mapActions(["getPosts"]),
     handleGetCarouselContent() {

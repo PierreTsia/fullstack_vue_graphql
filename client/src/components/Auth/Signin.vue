@@ -1,8 +1,16 @@
 <template>
-  <v-container grid-list-md text-xs-center>
-    <v-layout row wrap>
-      <v-flex xs6 offset-xs3>
-        <v-card color="white" class="ma-5 pa-1">
+  <v-container class="signin" grid-list-md text-xs-center>
+    <v-layout row wrap class="mt-5">
+      <v-flex xs12 offset-md3 md6 class="signin__form">
+        <transition name="bounce">
+          <template v-if="loginError">
+            <form-alert
+              class="signin__form__alert"
+              :message="loginError.message"
+            ></form-alert>
+          </template>
+        </transition>
+        <v-card color="white">
           <v-icon color="primary" class="mt-2" large>account_box</v-icon>
           <div class="title primary--text font-weight-light">Login</div>
           <v-form
@@ -39,6 +47,7 @@
               large
               block
               class="mt-5"
+              :loading="userIsLoading"
               :disabled="!valid"
             >
               Login</v-btn
@@ -51,7 +60,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "Signin",
   data() {
@@ -64,18 +73,60 @@ export default {
       rules: {
         required: value => !!value || "Field required",
         min: value => value.trim().length >= 4 || "Minimum 4 characters"
+        // noEmpty: value => !this.isWhiteSpace(value) || "No Whitespaces"
       }
     };
+  },
+  watch: {
+    isAuth: {
+      immediate: true,
+      handler(isAuth) {
+        if (isAuth) {
+          this.$router.push("/");
+        }
+      }
+    }
+  },
+  computed: {
+    ...mapGetters(["isAuth", "loginError", "userIsLoading"])
   },
   methods: {
     ...mapActions(["loginUser"]),
     login() {
       const user = { username: this.username, password: this.password };
-      console.log(user);
       this.loginUser(user);
+    },
+    isWhiteSpace(str) {
+      const pattern = /\s/g;
+      return str.match(pattern);
     }
   }
 };
 </script>
 
-<style scoped></style>
+<style lang="stylus">
+.signin
+  .signin__form
+    position relative
+    .signin__form__alert
+      position absolute
+      top -70px
+      width calc(100% - 8px)
+
+
+.bounce-enter-active
+  animation: bounce-in .33s;
+
+.bounce-leave-active
+  animation: bounce-in .33s reverse;
+
+@keyframes bounce-in
+  0%
+    transform: scale(0);
+
+  50%
+    transform: scale(1.1);
+
+  100%
+    transform: scale(1);
+</style>

@@ -1,7 +1,16 @@
 /*USER*/
 export const SET_USER_LOADING = "SET_USER_LOADING";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
+export const SET_LOGIN_ERROR = "SET_LOGIN_ERROR";
+export const SET_LOGIN_SUCCESS = "SET_LOGIN_SUCCESS";
+export const SET_AUTH_ERROR = "SET_AUTH_ERROR";
+export const SET_SIGNUP_ERROR = "SET_SIGNUP_ERROR";
+export const SET_SIGNUP_SUCCESS = "SET_SIGNUP_SUCCESS";
 
 /*POSTS*/
 export const SET_POSTS = "SET_POSTS";
 export const SET_POSTS_LOADING = "SET_POSTS_LOADING";
+
+/* APP */
+export const SHOW_SNACK = "SHOW_SNACK";
+export const HIDE_SNACK = "HIDE_SNACK";

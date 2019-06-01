@@ -1,10 +1,14 @@
 export const state = {
-  isLoading: false
+  isLoading: false,
+  isSnackShown: false,
+  snackProps: {}
 };
 const getters = {
-  appIsLoading: state => state.isLoading
+  isAppLoading: state => state.isLoading,
+  isSnackShown: state => state.isSnackShown,
+  snackProps: state => state.snackProps
 };
-const actions = {};
+export const actions = {};
 export const mutations = {};
 export default {
   state,

@@ -4,9 +4,13 @@ import "./plugins/vuetify";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store/index";
+import * as types from "./store/mutation-types";
 
 import ApolloClient from "apollo-boost";
 import VueApollo from "vue-apollo";
+import FormAlert from "@/components/utils/FormAlert";
+
+Vue.component("form-alert", FormAlert);
 
 Vue.use(VueApollo);
 
@@ -34,6 +38,10 @@ export const defaultClient = new ApolloClient({
     if (graphQLErrors) {
       for (let err of graphQLErrors) {
         console.dir(err);
+        if (err.name === "AuthenticationError") {
+          store.commit(types.SET_AUTH_ERROR, err);
+          store.dispatch("logout");
+        }
       }
     }
   }
