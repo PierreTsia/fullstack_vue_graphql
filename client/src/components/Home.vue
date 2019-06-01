@@ -1,6 +1,6 @@
 <template>
   <v-container text-xs-center>
-    <v-layout row v-show="isLoading">
+    <v-layout row v-show="postsAreLoading">
       <v-container fill-height>
         <v-flex xs12>
           <v-progress-circular
@@ -12,7 +12,7 @@
         </v-flex>
       </v-container>
     </v-layout>
-    <v-flex xs12 v-if="posts && !isLoading">
+    <v-flex xs12 v-if="posts && !postsAreLoading">
       <v-carousel v-bind="{ cycle: true }" interval="3000">
         <v-carousel-item
           v-for="post in posts"
@@ -41,7 +41,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["posts", "isLoading"])
+    ...mapGetters(["posts", "postsAreLoading"])
   },
   mounted() {
     this.handleGetCarouselContent();

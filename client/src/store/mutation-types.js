@@ -1,0 +1,7 @@
+/*USER*/
+export const SET_USER_LOADING = "SET_USER_LOADING";
+export const SET_CURRENT_USER = "SET_CURRENT_USER";
+
+/*POSTS*/
+export const SET_POSTS = "SET_POSTS";
+export const SET_POSTS_LOADING = "SET_POSTS_LOADING";
