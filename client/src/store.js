@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import router from "./router";
 import { defaultClient as apolloClient } from "./main";
 import { GET_POSTS, SIGNIN_USER, GET_CURRENT_USER } from "../queries";
 
@@ -32,7 +33,7 @@ export default new Vuex.Store({
         })
         .then(({ data }) => {
           commit("setCurrentUser", data.getCurrentUser);
-          commt("setUserLoading", false);
+          commit("setUserLoading", false);
         })
         .catch(e => {
           console.log(e);
@@ -47,10 +48,9 @@ export default new Vuex.Store({
           variables: payload
         })
         .then(({ data }) => {
-          console.log(data);
           const { token } = data.signinUser;
-          console.log(token);
           localStorage.setItem("token", token);
+          router.push("/");
         })
         .catch(e => {
           console.log(e);
