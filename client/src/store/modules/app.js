@@ -1,3 +1,5 @@
+import * as types from "../mutation-types";
+
 export const state = {
   isLoading: false,
   isSnackShown: false,
@@ -9,7 +11,17 @@ const getters = {
   snackProps: state => state.snackProps
 };
 export const actions = {};
-export const mutations = {};
+export const mutations = {
+  [types.ADD_POST_SUCCESS]: (state, payload) => {
+    const { title } = payload;
+
+    state.snackProps = {
+      success: true,
+      message: `${title} added successfully`
+    };
+    state.isSnackShown = true;
+  }
+};
 export default {
   state,
   getters,

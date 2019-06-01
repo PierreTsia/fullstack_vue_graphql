@@ -10,6 +10,7 @@ export const SET_SIGNUP_SUCCESS = "SET_SIGNUP_SUCCESS";
 /*POSTS*/
 export const SET_POSTS = "SET_POSTS";
 export const SET_POSTS_LOADING = "SET_POSTS_LOADING";
+export const ADD_POST_SUCCESS = "ADD_POST_SUCCESS";
 
 /* APP */
 export const SHOW_SNACK = "SHOW_SNACK";

@@ -118,6 +118,12 @@
           <router-view />
         </transition>
       </v-container>
+      <template v-if="isSnackShown">
+        <v-snackbar v-model="showSnack" color="black" bottom center>
+          <h3 class="caption">{{snackProps.message}}</h3>
+          <v-btn dark flat color="pink" @click="showSnack = !showSnack">close</v-btn>
+        </v-snackbar>
+      </template>
 
       <v-snackbar v-model="authSnackbar" color="success" bottom right>
         <h3 class="caption">👌You're now signed in as {{ userName }}</h3>
@@ -145,7 +151,8 @@ export default {
     return {
       sideNav: false,
       authSnackbar: false,
-      authErrorSnackbar: false
+      authErrorSnackbar: false,
+      showSnack: true,
     };
   },
   components: {
@@ -153,7 +160,7 @@ export default {
     IconCloud
   },
   computed: {
-    ...mapGetters(["snackProps", "isAuth", "me", "loginError", "authError"]),
+    ...mapGetters(["snackProps", "isAuth", "me", "loginError", "authError", "isSnackShown"]),
     sideNavItems() {
       return this.isAuth
         ? [
