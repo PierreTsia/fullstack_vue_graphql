@@ -8,6 +8,16 @@ export const GET_POSTS = gql`
       title
       description
       imageUrl
+      messages {
+        _id
+        messageBody
+        messageDate
+        messageUser {
+          _id
+          username
+          avatar
+        }
+      }
     }
   }
 `;

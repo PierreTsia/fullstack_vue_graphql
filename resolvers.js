@@ -11,10 +11,13 @@ module.exports = {
     getPosts: async (_, args, { Post }) => {
       const posts = Post.find({})
         .sort({ createdDate: "desc" })
-        .populate({
-          path: "createdBy",
-          model: "User"
-        });
+        .populate([
+          {
+            path: "createdBy",
+            model: "User"
+          },
+          { path: "messages.messageUser", model: "User" }
+        ]);
       return posts;
     },
     getPostById: async (_, { postId }, { currentUser, Post }) => {

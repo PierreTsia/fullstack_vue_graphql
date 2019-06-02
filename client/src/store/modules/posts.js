@@ -26,16 +26,25 @@ const getters = {
 const actions = {
   addPostMessage({ commit }, payload) {
     commit(types.SET_POSTS_LOADING, true);
+    const { postId } = payload;
     apolloClient
       .mutate({
         mutation: ADD_POST_MESSAGE,
         variables: payload
       })
       .then(({ data }) => {
-        console.log(data);
-        commit(types.SET_POST_MESSAGE_SUCCESS, data.addPostMessage);
+        console.log("data", data);
+        const { addPostMessage } = data;
+        console.log("addpostyMess", addPostMessage);
+        commit(types.SET_POST_MESSAGE_SUCCESS, {
+          postId,
+          message: addPostMessage
+        });
       })
-      .catch(e => commit(types.SET_POST_MESSAGE_ERROR, e))
+      .catch(e => {
+        console.log(e);
+        commit(types.SET_POST_MESSAGE_ERROR, e);
+      })
       .finally(() => commit(types.SET_POSTS_LOADING, false));
   },
 
@@ -44,23 +53,22 @@ const actions = {
     apolloClient
       .mutate({
         mutation: ADD_POST,
-        variables: payload,
-        update: (cache, { data: { addPost } }) => {
+        variables: payload
+        /*        update: (cache, { data: { addPost } }) => {
           const data = cache.readQuery({ query: GET_POSTS });
           data.getPosts.unshift(addPost);
           cache.writeQuery({ query: GET_POSTS, data });
-        },
-        optimisticResponse: {
+        },*/
+        /*optimisticResponse: {
           __typename: "Mutation",
           addPost: {
             __typename: "Post",
             _id: -1,
             ...payload
           }
-        }
+        }*/
       })
       .then(({ data }) => {
-        console.log(data);
         commit(types.ADD_POST_SUCCESS, data.addPost);
       })
       .catch(e => {
@@ -87,7 +95,6 @@ const actions = {
   },
 
   getPostById({ commit }, postId) {
-    console.log("action", postId);
     commit(types.SET_POSTS_LOADING, true);
     apolloClient
       .query({
@@ -110,15 +117,22 @@ export const mutations = {
     (state.postsAreLoading = payload),
   [types.SET_CURRENT_POST_SUCCESS]: (state, payload) =>
     (state.currentPost = payload),
+  [types.ADD_POST_SUCCESS]: (state, payload) =>
+    (state.posts = [payload, ...state.posts]),
   [types.SET_POST_ERROR]: (state, error) => (state.postError = error),
   [types.SET_POST_MESSAGE_ERROR]: (state, error) =>
     (state.postMessageError = error),
   [types.SET_POST_MESSAGE_SUCCESS]: (state, payload) => {
     state.postMessageError = null;
+    const { postId, message } = payload;
+    console.log("args", message, postId);
+
     state.currentPost.messages = [].concat(
-      payload,
+      message,
       ...state.currentPost.messages
     );
+    const postToUpdate = state.posts.find(p => p._id === postId);
+    postToUpdate.messages = [message, ...postToUpdate.messages];
   }
 };
 export default {

@@ -116,7 +116,6 @@ export default {
   name: "Post",
   mounted() {
     const postId = this.$route.params.postId;
-    console.log("id", postId);
     this.getPostById(postId);
   },
   watch: {
@@ -124,7 +123,6 @@ export default {
       immediate: true,
       deep: true,
       handler(post) {
-        console.log(post);
       }
     }
   },
@@ -159,7 +157,6 @@ export default {
           messageUserId: this.me._id,
           postId: this.currentPost._id
         };
-        console.log(newMessage);
         this.addPostMessage(newMessage);
         this.$refs.form.reset()
       }

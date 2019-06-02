@@ -81,8 +81,8 @@
 
 <script>
 import { INFINITE_SCROLL_POSTS } from "../../../queries";
+import {mapActions} from "vuex"
 const pageSize = 9;
-
 export default {
   name: "Posts",
   data() {
@@ -102,7 +102,20 @@ export default {
     }
   },
 
+  watch:{
+    infiniteScrollPosts:{
+      immediate: true,
+      deep: true,
+      handler(value){
+        console.log(value)
+      }
+    }
+  },
+  mounted(){
+    this.getPosts()
+  },
   methods: {
+    ...mapActions(['getPosts']),
     handlePostClick(item) {
       console.log(item._id);
       this.$router.push(`post/${item._id}`);
