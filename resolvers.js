@@ -8,8 +8,9 @@ const createToken = (user, secret, expiresIn) => {
 
 module.exports = {
   Query: {
-    getPosts: async (_, args, { Post }) => {
+    getPosts: async (_, { limit }, { Post }) => {
       const posts = Post.find({})
+        .limit(limit)
         .sort({ createdDate: "desc" })
         .populate([
           {
@@ -52,7 +53,10 @@ module.exports = {
       if (pageNum === 1) {
         posts = await Post.find({})
           .sort({ createdDate: "desc" })
-          .populate({ path: "createdBy", model: "User" })
+          .populate([
+            { path: "createdBy", model: "User" },
+            { path: "messages.messageUser", model: "User" }
+          ])
           .limit(pageSize);
       } else {
         const skips = pageSize * (pageNum - 1);

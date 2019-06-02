@@ -4,6 +4,7 @@ import {
   GET_POST_BY_ID,
   GET_POSTS,
   SIGNIN_USER,
+  INFINITE_SCROLL_POSTS,
   ADD_POST_MESSAGE
 } from "../../../queries";
 import * as types from "../mutation-types";
@@ -14,7 +15,8 @@ export const state = {
   posts: [],
   currentPost: null,
   postError: null,
-  postMessageError: null
+  postMessageError: null,
+  hasMore: false
 };
 const getters = {
   postsAreLoading: state => state.postsAreLoading,
@@ -54,19 +56,6 @@ const actions = {
       .mutate({
         mutation: ADD_POST,
         variables: payload
-        /*        update: (cache, { data: { addPost } }) => {
-          const data = cache.readQuery({ query: GET_POSTS });
-          data.getPosts.unshift(addPost);
-          cache.writeQuery({ query: GET_POSTS, data });
-        },*/
-        /*optimisticResponse: {
-          __typename: "Mutation",
-          addPost: {
-            __typename: "Post",
-            _id: -1,
-            ...payload
-          }
-        }*/
       })
       .then(({ data }) => {
         commit(types.ADD_POST_SUCCESS, data.addPost);
@@ -77,11 +66,27 @@ const actions = {
       .finally(() => commit(types.SET_POSTS_LOADING, false));
   },
 
-  getPosts: ({ commit }) => {
+  infiniteScrollPosts({ commit }, payload) {
+    apolloClient
+      .query({
+        query: INFINITE_SCROLL_POSTS,
+        variables: payload
+      })
+      .then(({ data }) => {
+        console.log(data);
+        const { hasMore, posts } = data.infiniteScrollPosts;
+        commit(types.SET_MERGE_POSTS, { hasMore, posts });
+      })
+      .catch(e => console.log(e))
+      .finally();
+  },
+
+  getPosts: ({ commit }, payload) => {
     commit(types.SET_POSTS_LOADING, true);
     apolloClient
       .query({
-        query: GET_POSTS
+        query: GET_POSTS,
+        variables: payload
       })
       .then(({ data }) => {
         commit(types.SET_POSTS_LOADING, false);
@@ -122,6 +127,10 @@ export const mutations = {
   [types.SET_POST_ERROR]: (state, error) => (state.postError = error),
   [types.SET_POST_MESSAGE_ERROR]: (state, error) =>
     (state.postMessageError = error),
+  [types.SET_MERGE_POSTS]: (state, { hasMore, posts }) => {
+    state.hasMore = hasMore;
+    state.posts = [...state.posts, ...posts];
+  },
   [types.SET_POST_MESSAGE_SUCCESS]: (state, payload) => {
     state.postMessageError = null;
     const { postId, message } = payload;

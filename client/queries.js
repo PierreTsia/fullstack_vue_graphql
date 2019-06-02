@@ -2,12 +2,17 @@ import { gql } from "apollo-boost";
 
 /* Posts Queries */
 export const GET_POSTS = gql`
-  query {
-    getPosts {
+  query($limit: Int!) {
+    getPosts(limit: $limit) {
       _id
       title
       description
       imageUrl
+      createdBy {
+        _id
+        avatar
+        username
+      }
       messages {
         _id
         messageBody
@@ -62,6 +67,10 @@ export const INFINITE_SCROLL_POSTS = gql`
         createdDate
         messages {
           _id
+          messageUser {
+            _id
+            avatar
+          }
         }
         createdBy {
           _id

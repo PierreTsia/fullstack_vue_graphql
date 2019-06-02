@@ -50,11 +50,7 @@
     <div class="mt-3">
       <v-layout class="mb-3" v-if="isAuth">
         <v-flex xs12>
-          <v-form
-            v-model="isFormValid"
-            ref="form"
-            lazy-validation
-          >
+          <v-form v-model="isFormValid" ref="form" lazy-validation>
             <v-layout row>
               <v-flex xs12>
                 <v-text-field
@@ -122,8 +118,7 @@ export default {
     currentPost: {
       immediate: true,
       deep: true,
-      handler(post) {
-      }
+      handler(post) {}
     }
   },
   data() {
@@ -133,7 +128,7 @@ export default {
       isFormValid: true,
       messageRules: [
         message => !!message || "message is required",
-        message => message && message.length < 100 || "100 characters max"
+        message => (message && message.length < 100) || "100 characters max"
       ]
     };
   },
@@ -158,7 +153,7 @@ export default {
           postId: this.currentPost._id
         };
         this.addPostMessage(newMessage);
-        this.$refs.form.reset()
+        this.$refs.form.reset();
       }
     }
   }
