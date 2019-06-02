@@ -12,7 +12,9 @@
         </transition>
         <v-card color="white">
           <v-icon color="primary" class="mt-2" large>account_box</v-icon>
-          <div class="title primary--text font-weight-light">Start here and sign-up</div>
+          <div class="title primary--text font-weight-light">
+            Start here and sign-up
+          </div>
           <v-form
             ref="form"
             v-model="valid"
@@ -126,16 +128,15 @@ export default {
     isAuth: {
       immediate: true,
       handler(isAuth) {
-        console.log(isAuth)
+        console.log(isAuth);
         if (isAuth) {
           this.$router.push("/");
         }
       }
     }
-
   },
   computed: {
-    ...mapGetters(["signupError","isAuth", "userIsLoading"])
+    ...mapGetters(["signupError", "isAuth", "userIsLoading"])
   }
 };
 </script>

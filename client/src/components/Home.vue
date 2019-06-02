@@ -12,7 +12,7 @@
         </v-flex>
       </v-container>
     </v-layout>
-    <v-flex xs12 v-if="posts && !postsAreLoading">
+    <v-flex xs12 v-if="posts.length && !postsAreLoading">
       <v-carousel v-bind="{ cycle: true }" interval="3000">
         <v-carousel-item
           v-for="post in posts"

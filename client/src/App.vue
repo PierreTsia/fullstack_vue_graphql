@@ -113,15 +113,17 @@
 
     <!-- App Content -->
     <main class="fill-height info">
-      <v-container class="appContainer">
+      <div class="appContainer">
         <transition name="fade">
           <router-view />
         </transition>
-      </v-container>
+      </div>
       <template v-if="isSnackShown">
         <v-snackbar v-model="showSnack" color="black" bottom center>
-          <h3 class="caption">{{snackProps.message}}</h3>
-          <v-btn dark flat color="pink" @click="showSnack = !showSnack">close</v-btn>
+          <h3 class="caption">{{ snackProps.message }}</h3>
+          <v-btn dark flat color="pink" @click="showSnack = !showSnack"
+            >close</v-btn
+          >
         </v-snackbar>
       </template>
 
@@ -152,7 +154,7 @@ export default {
       sideNav: false,
       authSnackbar: false,
       authErrorSnackbar: false,
-      showSnack: true,
+      showSnack: true
     };
   },
   components: {
@@ -160,7 +162,14 @@ export default {
     IconCloud
   },
   computed: {
-    ...mapGetters(["snackProps", "isAuth", "me", "loginError", "authError", "isSnackShown"]),
+    ...mapGetters([
+      "snackProps",
+      "isAuth",
+      "me",
+      "loginError",
+      "authError",
+      "isSnackShown"
+    ]),
     sideNavItems() {
       return this.isAuth
         ? [

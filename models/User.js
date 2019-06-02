@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre("save", function(next) {
-  this.avatar = `http//gravatar.com/avatar/${md5(this.username)}?d=identicon`;
+  this.avatar = `https://gravatar.com/avatar/${md5(this.username)}?d=identicon`;
   next();
 });
 

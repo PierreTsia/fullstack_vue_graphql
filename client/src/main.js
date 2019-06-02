@@ -9,8 +9,10 @@ import * as types from "./store/mutation-types";
 import ApolloClient from "apollo-boost";
 import VueApollo from "vue-apollo";
 import FormAlert from "@/components/utils/FormAlert";
+import { VueMasonryPlugin } from "vue-masonry";
 
 Vue.component("form-alert", FormAlert);
+Vue.use(VueMasonryPlugin);
 
 Vue.use(VueApollo);
 

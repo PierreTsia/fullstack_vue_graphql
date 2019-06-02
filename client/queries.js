@@ -12,6 +12,58 @@ export const GET_POSTS = gql`
   }
 `;
 
+export const GET_POST_BY_ID = gql`
+  query($postId: ID!) {
+    getPostById(postId: $postId) {
+      _id
+      title
+      categories
+      description
+      createdDate
+      messages {
+        _id
+        messageDate
+        messageBody
+        messageUser {
+          _id
+          avatar
+          username
+        }
+      }
+      imageUrl
+      likes
+      createdBy {
+        _id
+        username
+      }
+    }
+  }
+`;
+
+export const INFINITE_SCROLL_POSTS = gql`
+  query($pageNum: Int!, $pageSize: Int!) {
+    infiniteScrollPosts(pageNum: $pageNum, pageSize: $pageSize) {
+      posts {
+        _id
+        title
+        imageUrl
+        description
+        likes
+        createdDate
+        messages {
+          _id
+        }
+        createdBy {
+          _id
+          username
+          avatar
+        }
+      }
+      hasMore
+    }
+  }
+`;
+
 /* User Queries */
 export const GET_CURRENT_USER = gql`
   query {
@@ -51,6 +103,25 @@ export const ADD_POST = gql`
       categories
       description
       imageUrl
+    }
+  }
+`;
+
+export const ADD_POST_MESSAGE = gql`
+  mutation($postId: ID!, $messageBody: String!, $messageUserId: ID!) {
+    addPostMessage(
+      postId: $postId
+      messageBody: $messageBody
+      messageUserId: $messageUserId
+    ) {
+      messageBody
+      _id
+      messageDate
+      messageUser {
+        _id
+        username
+        avatar
+      }
     }
   }
 `;

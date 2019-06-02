@@ -1,5 +1,12 @@
 <template>
-  <v-alert class="alert" type="error" color="error" icon="warning" :value="true" dismissible>
+  <v-alert
+    class="alert"
+    type="error"
+    color="error"
+    icon="warning"
+    :value="true"
+    dismissible
+  >
     <h3>{{ message }}</h3>
   </v-alert>
 </template>
@@ -16,6 +23,4 @@ export default {
 };
 </script>
 
-<style lang="stylus">
-
-</style>
+<style lang="stylus"></style>

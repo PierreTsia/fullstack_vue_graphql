@@ -102,8 +102,8 @@ export default {
           categories: [...this.categories],
           creatorId: this.me._id
         };
-        this.addPost(payload)
-        this.$router.push('/')
+        this.addPost(payload);
+        this.$router.push("/");
       }
     }
   }
