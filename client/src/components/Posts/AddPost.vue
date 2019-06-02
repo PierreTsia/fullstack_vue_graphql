@@ -103,7 +103,7 @@ export default {
           creatorId: this.me._id
         };
         this.addPost(payload);
-        this.$router.push("/");
+        this.$router.push("/posts");
       }
     }
   }

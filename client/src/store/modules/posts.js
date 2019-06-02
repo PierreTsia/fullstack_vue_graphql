@@ -5,7 +5,8 @@ import {
   GET_POSTS,
   SIGNIN_USER,
   INFINITE_SCROLL_POSTS,
-  ADD_POST_MESSAGE
+  ADD_POST_MESSAGE,
+  LIKE_POST
 } from "../../../queries";
 import * as types from "../mutation-types";
 import router from "../../router";
@@ -66,6 +67,16 @@ const actions = {
       .finally(() => commit(types.SET_POSTS_LOADING, false));
   },
 
+  likePost({ commit }, payload) {
+    apolloClient
+      .mutate({ mutation: LIKE_POST, variables: payload })
+      .then(({ data }) => {
+        const { userIds, postId } = data.likePost;
+        commit(types.LIKE_POST_SUCCESS, { userIds, postId });
+      })
+      .catch(e => console.log(e));
+  },
+
   infiniteScrollPosts({ commit }, payload) {
     apolloClient
       .query({
@@ -118,6 +129,7 @@ const actions = {
 };
 export const mutations = {
   [types.SET_POSTS]: (state, payload) => (state.posts = payload),
+  [types.SET_LOG_OUT_SUCCESS]: state => (state.posts = []),
   [types.SET_POSTS_LOADING]: (state, payload) =>
     (state.postsAreLoading = payload),
   [types.SET_CURRENT_POST_SUCCESS]: (state, payload) =>
@@ -134,14 +146,19 @@ export const mutations = {
   [types.SET_POST_MESSAGE_SUCCESS]: (state, payload) => {
     state.postMessageError = null;
     const { postId, message } = payload;
-    console.log("args", message, postId);
-
     state.currentPost.messages = [].concat(
       message,
       ...state.currentPost.messages
     );
     const postToUpdate = state.posts.find(p => p._id === postId);
     postToUpdate.messages = [message, ...postToUpdate.messages];
+  },
+  [types.LIKE_POST_SUCCESS]: (state, { postId, userIds }) => {
+    const postToUpdate = state.posts.find(p => p._id === postId);
+    postToUpdate.likes = userIds;
+    if (state.currentPost._id === postId) {
+      state.currentPost.likes = userIds;
+    }
   }
 };
 export default {

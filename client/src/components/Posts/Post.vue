@@ -6,11 +6,15 @@
           <v-card-title>
             <h1>{{ currentPost.title }}</h1>
             <v-spacer></v-spacer>
-            <v-btn large icon v-if="me">
-              <v-icon large color="grey">favorite</v-icon>
+            <v-btn @click="handleLikePost" large icon v-if="me">
+              <v-icon
+                large
+                :color="userHasLikedPost(currentPost) ? 'error' : 'grey'"
+                >favorite</v-icon
+              >
             </v-btn>
             <h3 class="ml-3 mr-3 font-weight-thin">
-              {{ currentPost.likes }} LIKES
+              {{ currentPost.likes.length }} LIKES
             </h3>
             <v-icon @click="goToPreviousPage" large class="ml-3" color="primary"
               >arrow_back</v-icon
@@ -136,14 +140,20 @@ export default {
     ...mapGetters(["isAuth", "currentPost", "currentPostMessages", "me"])
   },
   methods: {
-    ...mapActions(["getPostById", "addPostMessage"]),
+    ...mapActions(["getPostById", "addPostMessage", "likePost"]),
     goToPreviousPage() {
       this.$router.go(-1);
+    },
+    userHasLikedPost(post) {
+      return post.likes.includes(this.me._id);
     },
     toggleDialog() {
       if (window.innerWidth > 500) {
         this.dialog = !this.dialog;
       }
+    },
+    handleLikePost() {
+      this.likePost({ postId: this.currentPost._id, userId: this.me._id });
     },
     handlePostMessage() {
       if (this.$refs.form.validate()) {

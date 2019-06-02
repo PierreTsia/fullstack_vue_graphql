@@ -3,9 +3,10 @@
     <div class="postsGrid">
       <v-card
         hover
-        class="postCard "
-        v-for="item in posts"
+        class="postCard"
+        v-for="(item, index) in posts"
         :key="item._id"
+        :id="index"
         height="400"
       >
         <v-img
@@ -38,7 +39,7 @@
             {{ item.description }}
           </div>
           <div class="cardContent font-weight-regular secondary--text mt-2">
-            <span class="postTitle__infos">{{ item.likes }} likes</span>
+            <span class="postTitle__infos">{{ item.likes.length }} likes</span>
             <span class="postTitle__infos"
               >{{ item.messages.length }} comments</span
             >
@@ -66,75 +67,7 @@
         </v-layout>
       </v-card>
     </div>
-    <!--<div class="postsGrid" v-if="infiniteScrollPosts">
-      <v-card
-        hover
-        class="postCard "
-        v-for="item in infiniteScrollPosts.posts"
-        :key="item._id"
-        height="400"
-      >
-        <v-img
-          @click="handlePostClick(item)"
-          lazy
-          class="postImage"
-          :src="item.imageUrl"
-          aspect-ratio="2.75"
-          :style="{
-            height: isMorePostInfosShown(item._id) ? '80px' : 'auto'
-          }"
-        ></v-img>
-        <v-card-title class="postTitle" primary-title>
-          <h3
-            :class="[
-              'font-weight-bold',
-              'headline',
-              'mb-0',
-              isMorePostInfosShown(item._id) ? '&#45;&#45;isLarge' : '&#45;&#45;isSmall'
-            ]"
-          >
-            {{ item.title }}
-          </h3>
-          <div
-            :class="[
-              'description',
-              isMorePostInfosShown(item._id) ? '&#45;&#45;isLarge' : '&#45;&#45;isSmall'
-            ]"
-          >
-            {{ item.description }}
-          </div>
-          <div class="cardContent font-weight-regular secondary&#45;&#45;text mt-2">
-            <span class="postTitle__infos">{{ item.likes }} likes</span>
-            <span class="postTitle__infos"
-              >{{ item.messages.length }} comments</span
-            >
-            <div class="postShowMoreInfos">
-              <v-btn flat icon @click="showMorePostInfos(item._id)">
-                <v-icon v-if="isMorePostInfosShown(item._id)" class=""
-                  >expand_more</v-icon
-                >
-                <v-icon v-else class="">expand_less</v-icon>
-              </v-btn>
-            </div>
-          </div>
-        </v-card-title>
-        <v-layout
-          row
-          align-end
-          justify-start
-          class="pl-4 pb-4"
-          v-if="isMorePostInfosShown(item._id)"
-        >
-          <v-avatar :size="36" color="grey lighten-4" class="mr-4">
-            <img :src="item.createdBy.avatar" alt="avatar" />
-          </v-avatar>
-          <span class="subheading pb-1">{{ item.createdBy.username }}</span>
-        </v-layout>
-      </v-card>
-    </div>-->
-    <div
-      class="showMore"
-    >
+    <div class="showMore">
       <v-btn fab large color="primary" @click="showMorePosts">
         <v-icon dark>add</v-icon>
       </v-btn>
@@ -150,14 +83,15 @@ export default {
   data() {
     return {
       pageNum: 1,
-      pageSize: 3,
+      pageSize: 6,
       showMoreEnabled: false,
       showMoreInfoPostIds: []
     };
   },
+  watch: {},
   mounted() {
-    if(!this.posts.length){
-      this.getPosts({limit: this.pageSize});
+    if (!this.posts.length) {
+      this.getPosts({ limit: this.pageSize });
     }
   },
   computed: {
@@ -168,14 +102,19 @@ export default {
     handlePostClick(item) {
       this.$router.push(`post/${item._id}`);
     },
+
     showMorePostInfos(postId) {
       this.showMoreInfoPostIds = this.showMoreInfoPostIds.includes(postId)
         ? this.showMoreInfoPostIds.filter(id => id !== postId)
         : [...this.showMoreInfoPostIds, postId];
     },
+
     showMorePosts() {
       this.pageNum += 1;
-      this.infiniteScrollPosts({ pageNum: this.pageNum, pageSize:this.pageSize })
+      this.infiniteScrollPosts({
+        pageNum: this.pageNum,
+        pageSize: this.pageSize
+      });
     },
     isMorePostInfosShown(postId) {
       return this.showMoreInfoPostIds.includes(postId);

@@ -8,6 +8,7 @@ export const GET_POSTS = gql`
       title
       description
       imageUrl
+      likes
       createdBy {
         _id
         avatar
@@ -83,6 +84,15 @@ export const INFINITE_SCROLL_POSTS = gql`
   }
 `;
 
+export const LIKE_POST = gql`
+  mutation($postId: ID!, $userId: ID!) {
+    likePost(postId: $postId, userId: $userId) {
+      postId
+      userIds
+    }
+  }
+`;
+
 /* User Queries */
 export const GET_CURRENT_USER = gql`
   query {
@@ -122,6 +132,10 @@ export const ADD_POST = gql`
       categories
       description
       imageUrl
+      likes
+      messages {
+        _id
+      }
     }
   }
 `;

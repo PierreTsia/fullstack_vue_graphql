@@ -22,10 +22,6 @@ module.exports = {
       return posts;
     },
     getPostById: async (_, { postId }, { currentUser, Post }) => {
-      console.log(currentUser);
-      /*if (!currentUser) {
-        throw new Error("Authentication required");
-      }*/
       const post = await Post.findById(postId).populate([
         {
           path: "createdBy",
@@ -102,8 +98,18 @@ module.exports = {
         { new: true }
       ).populate({ path: "messages.messageUser", model: "User" });
 
-      console.log(post);
       return post.messages[0];
+    },
+
+    likePost: async (_, { postId, userId }, { Post }) => {
+      const post = await Post.findOneAndUpdate(
+        { _id: postId },
+        { $addToSet: { likes: [userId] } },
+        { new: true }
+      );
+
+      const userIds = post.likes;
+      return { postId: post._id, userIds };
     },
 
     signupUser: async (_, { username, email, password }, { User }) => {
@@ -126,7 +132,6 @@ module.exports = {
         throw new Error("User not found");
       }
       const isValidPassword = await bcrypt.compare(password, user.password);
-      console.log(isValidPassword);
       if (!isValidPassword) {
         throw new Error("password is incorrect");
       }

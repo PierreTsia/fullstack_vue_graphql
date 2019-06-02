@@ -38,7 +38,7 @@ export default {
   methods: {
     ...mapActions(["getPosts"]),
     handleGetCarouselContent() {
-      this.getPosts({limit: 5});
+      this.getPosts({ limit: 5 });
     }
   },
   computed: {

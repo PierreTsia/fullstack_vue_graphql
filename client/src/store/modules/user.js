@@ -64,6 +64,7 @@ const actions = {
     commit(types.SET_CURRENT_USER, null);
     await apolloClient.resetStore();
     router.push("/");
+    commit(types.SET_LOG_OUT_SUCCESS);
   },
 
   signupUser({ commit }, payload) {

@@ -15,7 +15,7 @@ type Post {
   categories: [String]!
   description: String!
   createdDate: String
-  likes: Int
+  likes: [ID]
   createdBy: User!
   messages: [Message]
 }
@@ -36,11 +36,17 @@ type Message {
   messageUser: User!
 }
 
+type LikeSchema {
+  postId: ID!
+  userIds: [ID]!
+}
+
 type Mutation {
   signupUser(username: String!, email: String!, password: String!): Token
   signinUser(username: String!, password: String!): Token
   addPost(title: String!, imageUrl: String!, categories:[String]!, description: String!, creatorId: ID!): Post!
   addPostMessage(postId: ID!, messageUserId: ID!, messageBody: String!):Message
+  likePost(postId: ID!, userId: ID!):LikeSchema
 }
 
 type Query {
