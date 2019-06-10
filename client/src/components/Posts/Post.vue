@@ -1,25 +1,12 @@
 <template>
-  <v-container
-    v-if="currentPost"
-    class="mt-3"
-    flexbox
-    center
-  >
-    <v-layout
-      row
-      wrap
-    >
+  <v-container v-if="currentPost" class="mt-3" flexbox center>
+    <v-layout row wrap>
       <v-flex xs12>
         <v-card hover>
           <v-card-title>
             <h1>{{ currentPost.title }}</h1>
             <v-spacer />
-            <v-btn
-              v-if="me"
-              large
-              icon
-              @click="handleLikePost"
-            >
+            <v-btn v-if="me" large icon @click="handleLikePost(currentPost)">
               <v-icon
                 large
                 :color="userHasLikedPost(currentPost) ? 'error' : 'grey'"
@@ -50,10 +37,7 @@
           </v-tooltip>
           <v-dialog v-model="dialog">
             <v-card>
-              <v-img
-                :src="currentPost.imageUrl"
-                height="80vh"
-              />
+              <v-img :src="currentPost.imageUrl" height="80vh" />
             </v-card>
           </v-dialog>
           <v-card-text>
@@ -61,11 +45,7 @@
               v-for="(category, index) in currentPost.categories"
               :key="index"
             >
-              <v-chip
-                class="mb-3"
-                color="error"
-                text-color="white"
-              >{{
+              <v-chip class="mb-3" color="error" text-color="white">{{
                 category
               }}</v-chip>
             </span>
@@ -78,16 +58,9 @@
     </v-layout>
 
     <div class="mt-3">
-      <v-layout
-        v-if="isAuth"
-        class="mb-3"
-      >
+      <v-layout v-if="isAuth" class="mb-3">
         <v-flex xs12>
-          <v-form
-            ref="form"
-            v-model="isFormValid"
-            lazy-validation
-          >
+          <v-form ref="form" v-model="isFormValid" lazy-validation>
             <v-layout row>
               <v-flex xs12>
                 <v-text-field
@@ -106,32 +79,18 @@
           </v-form>
         </v-flex>
       </v-layout>
-      <v-layout
-        v-if="currentPost && currentPost.messages"
-        row
-        wrap
-      >
+      <v-layout v-if="currentPost && currentPost.messages" row wrap>
         <v-flex xs12>
-          <v-list
-            subheader
-            two-line
-          >
+          <v-list subheader two-line>
             <v-subheader>
               Messages ({{ currentPost.messages.length }})
             </v-subheader>
             <template v-if="currentPost.messages.length">
               <template v-for="message in currentPost.messages">
                 <v-divider :key="message._id" />
-                <v-list-tile
-                  :key="message.title"
-                  avatar
-                  inset
-                >
+                <v-list-tile :key="message.title" avatar inset>
                   <v-list-tile-avatar>
-                    <img
-                      :src="message.messageUser.avatar"
-                      alt=""
-                    >
+                    <img :src="message.messageUser.avatar" alt="" />
                   </v-list-tile-avatar>
                   <v-list-tile-content>
                     <v-list-tile-title>
@@ -139,9 +98,8 @@
                     </v-list-tile-title>
                     <v-list-tile-sub-title>
                       {{ message.messageUser.username }}
-                      <span
-                        class="grey--text text--lighten-1 hidden-xs-only"
-                      >{{ message.messageDate }}
+                      <span class="grey--text text--lighten-1 hidden-xs-only"
+                        >{{ message.messageDate }}
                       </span>
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
@@ -190,7 +148,7 @@ export default {
     ...mapGetters(["isAuth", "currentPost", "currentPostMessages", "me"])
   },
   methods: {
-    ...mapActions(["getPostById", "addPostMessage", "likePost"]),
+    ...mapActions(["getPostById", "addPostMessage", "likePost", "unlikePost"]),
     goToPreviousPage() {
       this.$router.go(-1);
     },
@@ -202,8 +160,12 @@ export default {
         this.dialog = !this.dialog;
       }
     },
-    handleLikePost() {
-      this.likePost({ postId: this.currentPost._id, userId: this.me._id });
+    handleLikePost(post) {
+      if (!this.userHasLikedPost(post)) {
+        this.likePost({ postId: this.currentPost._id, userId: this.me._id });
+      } else {
+        this.unlikePost({ postId: this.currentPost._id, userId: this.me._id });
+      }
     },
     handlePostMessage() {
       if (this.$refs.form.validate()) {

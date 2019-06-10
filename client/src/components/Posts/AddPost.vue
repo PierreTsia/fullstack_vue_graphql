@@ -17,7 +17,7 @@
           required
         />
         <v-layout row wrap>
-          <v-flex xs5>
+          <v-flex xs5 class="uploadPreview">
             <UploadImage
               @uploaded="handleInputChange"
               @error="handleError"
@@ -29,33 +29,13 @@
                   <!-- Uploaded image -->
                   <v-img
                     v-if="isUploaded"
-                    :max-height="300"
+                    :max-height="150"
                     contain
                     :src="imgSrc"
                   />
-                  <!-- Delete button -->
-                  <div v-if="isUploaded">
-                    <v-btn
-                      class="ma-0"
-                      dark
-                      small
-                      color="error"
-                      @click="deleteImage()"
-                    >
-                      {{ deleteText }}
-                    </v-btn>
-                  </div>
                 </div>
               </template>
             </UploadImage>
-            <!--   <v-text-field
-              v-model="imageUrl"
-              name="imageUrl"
-              :rules="[rules.required, rules.min]"
-              placeholder=""
-              label="Url"
-              required
-            />-->
           </v-flex>
           <v-flex xs5 offset-xs2>
             <v-select
@@ -142,11 +122,11 @@ export default {
       console.error(e);
     },
     handleAddPost() {
-      if (this.$refs.form.validate()) {
+      if (this.$refs.form.validate() && this.imgSrc.length) {
         const payload = {
           title: this.title,
           description: this.description,
-          imageUrl: this.imageUrl,
+          imageUrl: this.imgSrc,
           categories: [...this.categories],
           creatorId: this.me._id
         };
@@ -158,4 +138,7 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="stylus">
+.uploadPreview
+  display flex
+</style>

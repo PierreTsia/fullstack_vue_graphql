@@ -93,6 +93,15 @@ export const LIKE_POST = gql`
   }
 `;
 
+export const UNLIKE_POST = gql`
+  mutation($postId: ID!, $userId: ID!) {
+    unlikePost(postId: $postId, userId: $userId) {
+      postId
+      userIds
+    }
+  }
+`;
+
 /* User Queries */
 export const GET_CURRENT_USER = gql`
   query {

@@ -6,7 +6,8 @@ import {
   SIGNIN_USER,
   INFINITE_SCROLL_POSTS,
   ADD_POST_MESSAGE,
-  LIKE_POST
+  LIKE_POST,
+  UNLIKE_POST
 } from "../../../queries";
 import * as types from "../mutation-types";
 import router from "../../router";
@@ -72,6 +73,16 @@ const actions = {
       .mutate({ mutation: LIKE_POST, variables: payload })
       .then(({ data }) => {
         const { userIds, postId } = data.likePost;
+        commit(types.LIKE_POST_SUCCESS, { userIds, postId });
+      })
+      .catch(e => console.log(e));
+  },
+
+  unlikePost({ commit }, payload) {
+    apolloClient
+      .mutate({ mutation: UNLIKE_POST, variables: payload })
+      .then(({ data }) => {
+        const { userIds, postId } = data.unlikePost;
         commit(types.LIKE_POST_SUCCESS, { userIds, postId });
       })
       .catch(e => console.log(e));

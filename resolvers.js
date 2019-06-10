@@ -112,6 +112,19 @@ module.exports = {
       return { postId: post._id, userIds };
     },
 
+    unlikePost: async (_, { postId, userId }, { Post }) => {
+      const post = await Post.findOneAndUpdate(
+        { _id: postId },
+        { $pull: { likes: userId } },
+        { new: true }
+      );
+
+      console.log(post);
+
+      const userIds = post.likes;
+      return { postId: post._id, userIds };
+    },
+
     signupUser: async (_, { username, email, password }, { User }) => {
       const existingUser = await User.findOne({ username });
       if (existingUser) {

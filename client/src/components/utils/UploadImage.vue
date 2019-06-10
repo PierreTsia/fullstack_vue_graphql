@@ -36,6 +36,16 @@
     </v-progress-circular>
     <!-- Uploaded image -->
     <slot name="imgPreview" />
+    <v-btn
+      v-if="imgPublicId"
+      class="ml-auto"
+      dark
+      small
+      color="error"
+      @click="deleteImage()"
+    >
+      {{ deleteText }}
+    </v-btn>
   </div>
 </template>
 
@@ -115,17 +125,6 @@ export default {
     };
   },
   computed: {
-    // Full image src, with transformation
-    imgSrc: {
-      get: function() {
-        return `https://res.cloudinary.com/${this.cloudName}/image/upload/${
-          this.transformation
-        }/${this.imgPublicId}`;
-      },
-      set: function(val) {
-        return val;
-      }
-    },
     // The url to POST the image to, based on cloudname
     apiEndpoint() {
       return `https://api.cloudinary.com/v1_1/${this.cloudName}/upload`;
