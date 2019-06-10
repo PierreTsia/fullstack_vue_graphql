@@ -1,6 +1,9 @@
 <template>
   <v-container text-xs-center>
-    <v-layout row v-show="postsAreLoading">
+    <v-layout
+      v-show="postsAreLoading"
+      row
+    >
       <v-container>
         <v-flex xs12>
           <v-progress-circular
@@ -8,19 +11,27 @@
             indeterminate
             :width="7"
             :size="70"
-          ></v-progress-circular>
+          />
         </v-flex>
       </v-container>
     </v-layout>
-    <v-flex xs12 v-if="posts.length && !postsAreLoading">
-      <v-carousel v-bind="{ cycle: true }" interval="3000">
+    <v-flex
+      v-if="posts.length && !postsAreLoading"
+      xs12
+    >
+      <v-carousel
+        v-bind="{ cycle: true }"
+        interval="3000"
+      >
         <v-carousel-item
           v-for="post in posts"
           :key="post._id"
           :src="post.imageUrl"
           :value="post"
         >
-          <h1 class="carousel_title">{{ post.title }}</h1>
+          <h1 class="carousel_title">
+            {{ post.title }}
+          </h1>
         </v-carousel-item>
       </v-carousel>
     </v-flex>
@@ -30,7 +41,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 export default {
-  name: "home",
+  name: "Home",
   data() {
     return {};
   },

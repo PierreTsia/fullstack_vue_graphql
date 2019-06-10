@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
-    "pretty": "npx prettier --write src/**/**/*.vue  src/**/*.vue src/*.vue *.js src/*.js src/**/*.js"
+    "storybook": "start-storybook"
   },
   "dependencies": {
     "apollo-boost": "^0.3.1",
@@ -21,6 +21,8 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@storybook/vue": "^5.0.11",
     "@vue/cli-plugin-babel": "^3.0.3",
     "@vue/cli-plugin-e2e-cypress": "^3.0.3",
     "@vue/cli-plugin-eslint": "^3.0.3",
@@ -31,14 +33,17 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
+    "babel-loader": "^8.0.6",
+    "babel-preset-vue": "^2.0.2",
     "eslint": "^5.16.0",
-    "eslint-plugin-vue": "^5.0.0",
+    "eslint-plugin-vue": "^5.2.2",
     "lint-staged": "^8.1.5",
     "prettier": "1.17.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "vue-cli-plugin-vuetify": "^0.5.0",
-    "vue-template-compiler": "^2.5.21",
+    "vue-loader": "^15.7.0",
+    "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.0.5"
   },
   "eslintConfig": {

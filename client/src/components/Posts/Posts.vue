@@ -2,15 +2,14 @@
   <div class="posts">
     <div class="postsGrid">
       <v-card
+        v-for="(item, index) in posts"
+        :id="index"
+        :key="item._id"
         hover
         class="postCard"
-        v-for="(item, index) in posts"
-        :key="item._id"
-        :id="index"
         height="400"
       >
         <v-img
-          @click="handlePostClick(item)"
           lazy
           class="postImage"
           :src="item.imageUrl"
@@ -18,8 +17,12 @@
           :style="{
             height: isMorePostInfosShown(item._id) ? '80px' : 'auto'
           }"
-        ></v-img>
-        <v-card-title class="postTitle" primary-title>
+          @click="handlePostClick(item)"
+        />
+        <v-card-title
+          class="postTitle"
+          primary-title
+        >
           <h3
             :class="[
               'font-weight-bold',
@@ -40,36 +43,62 @@
           </div>
           <div class="cardContent font-weight-regular secondary--text mt-2">
             <span class="postTitle__infos">{{ item.likes.length }} likes</span>
-            <span class="postTitle__infos"
-              >{{ item.messages.length }} comments</span
-            >
+            <span
+              class="postTitle__infos"
+            >{{ item.messages.length }} comments</span>
             <div class="postShowMoreInfos">
-              <v-btn flat icon @click="showMorePostInfos(item._id)">
-                <v-icon v-if="isMorePostInfosShown(item._id)" class=""
-                  >expand_more</v-icon
+              <v-btn
+                flat
+                icon
+                @click="showMorePostInfos(item._id)"
+              >
+                <v-icon
+                  v-if="isMorePostInfosShown(item._id)"
+                  class=""
                 >
-                <v-icon v-else class="">expand_less</v-icon>
+                  expand_more
+                </v-icon>
+                <v-icon
+                  v-else
+                  class=""
+                >
+                  expand_less
+                </v-icon>
               </v-btn>
             </div>
           </div>
         </v-card-title>
         <v-layout
+          v-if="isMorePostInfosShown(item._id)"
           row
           align-end
           justify-start
           class="pl-4 pb-4"
-          v-if="isMorePostInfosShown(item._id)"
         >
-          <v-avatar :size="36" color="grey lighten-4" class="mr-4">
-            <img :src="item.createdBy.avatar" alt="avatar" />
+          <v-avatar
+            :size="36"
+            color="grey lighten-4"
+            class="mr-4"
+          >
+            <img
+              :src="item.createdBy.avatar"
+              alt="avatar"
+            >
           </v-avatar>
           <span class="subheading pb-1">{{ item.createdBy.username }}</span>
         </v-layout>
       </v-card>
     </div>
     <div class="showMore">
-      <v-btn fab large color="primary" @click="showMorePosts">
-        <v-icon dark>add</v-icon>
+      <v-btn
+        fab
+        large
+        color="primary"
+        @click="showMorePosts"
+      >
+        <v-icon dark>
+          add
+        </v-icon>
       </v-btn>
     </div>
   </div>

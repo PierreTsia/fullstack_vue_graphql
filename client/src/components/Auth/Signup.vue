@@ -1,17 +1,36 @@
 <template>
-  <v-container class="signup" grid-list-md text-xs-center>
-    <v-layout row wrap class="mt-5">
-      <v-flex xs12 offset-md3 md6 class="signup__form">
+  <v-container
+    class="signup"
+    grid-list-md
+    text-xs-center
+  >
+    <v-layout
+      row
+      wrap
+      class="mt-5"
+    >
+      <v-flex
+        xs12
+        offset-md3
+        md6
+        class="signup__form"
+      >
         <transition name="bounce">
           <template v-if="signupError">
             <form-alert
               class="signup__form__alert"
               :message="signupError.message"
-            ></form-alert>
+            />
           </template>
         </transition>
         <v-card color="white">
-          <v-icon color="primary" class="mt-2" large>account_box</v-icon>
+          <v-icon
+            color="primary"
+            class="mt-2"
+            large
+          >
+            account_box
+          </v-icon>
           <div class="title primary--text font-weight-light">
             Start here and sign-up
           </div>
@@ -19,8 +38,8 @@
             ref="form"
             v-model="valid"
             lazy-validation
-            @submit.prevent="signup"
             class="ma-4 pa-2"
+            @submit.prevent="signup"
           >
             <v-text-field
               v-model="username"
@@ -30,7 +49,7 @@
               label="Username"
               required
               :append-icon="'person'"
-            ></v-text-field>
+            />
             <v-text-field
               v-model="email"
               name="username"
@@ -39,7 +58,7 @@
               label="Email"
               required
               :append-icon="'email'"
-            ></v-text-field>
+            />
             <v-text-field
               v-model="password"
               name="password"
@@ -51,7 +70,7 @@
               :type="showpassword ? 'text' : 'password'"
               class="input-group--focused"
               @click:append="showpassword = !showpassword"
-            ></v-text-field>
+            />
             <v-text-field
               v-model="password2"
               name="password"
@@ -63,7 +82,7 @@
               :type="showpassword2 ? 'text' : 'password'"
               class="input-group--focused"
               @click:append="showpassword2 = !showpassword2"
-            ></v-text-field>
+            />
             <v-btn
               type="submit"
               color="primary"
@@ -73,8 +92,8 @@
               :loading="userIsLoading"
               :disabled="!valid"
             >
-              Login</v-btn
-            >
+              Login
+            </v-btn>
           </v-form>
         </v-card>
       </v-flex>

@@ -1,7 +1,11 @@
 <template>
   <v-snackbar v-model="snackbar">
     ' text '
-    <v-btn color="pink" flat @click="snackbar = false">
+    <v-btn
+      color="pink"
+      flat
+      @click="snackbar = false"
+    >
       Close
     </v-btn>
   </v-snackbar>
@@ -10,11 +14,6 @@
 <script>
 export default {
   name: "SnackBar",
-  data() {
-    return {
-      snackbar: false
-    };
-  },
   props: {
     isShown: {
       type: Boolean,
@@ -25,8 +24,13 @@ export default {
       default: () => {}
     }
   },
-  watch: {},
-  computed: {}
+  data() {
+    return {
+      snackbar: false
+    };
+  },
+  computed: {},
+  watch: {}
 };
 </script>
 

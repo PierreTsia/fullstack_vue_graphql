@@ -1,37 +1,59 @@
 <template>
-  <v-container v-if="currentPost" class="mt-3" flexbox center>
-    <v-layout row wrap>
+  <v-container
+    v-if="currentPost"
+    class="mt-3"
+    flexbox
+    center
+  >
+    <v-layout
+      row
+      wrap
+    >
       <v-flex xs12>
         <v-card hover>
           <v-card-title>
             <h1>{{ currentPost.title }}</h1>
-            <v-spacer></v-spacer>
-            <v-btn @click="handleLikePost" large icon v-if="me">
+            <v-spacer />
+            <v-btn
+              v-if="me"
+              large
+              icon
+              @click="handleLikePost"
+            >
               <v-icon
                 large
                 :color="userHasLikedPost(currentPost) ? 'error' : 'grey'"
-                >favorite</v-icon
               >
+                favorite
+              </v-icon>
             </v-btn>
             <h3 class="ml-3 mr-3 font-weight-thin">
               {{ currentPost.likes.length }} LIKES
             </h3>
-            <v-icon @click="goToPreviousPage" large class="ml-3" color="primary"
-              >arrow_back</v-icon
+            <v-icon
+              large
+              class="ml-3"
+              color="primary"
+              @click="goToPreviousPage"
             >
+              arrow_back
+            </v-icon>
           </v-card-title>
           <v-tooltip right>
             <span>Click to enlarge image</span>
             <v-img
-              @click="toggleDialog"
               id="post__image"
               slot="activator"
               :src="currentPost.imageUrl"
-            ></v-img>
+              @click="toggleDialog"
+            />
           </v-tooltip>
           <v-dialog v-model="dialog">
             <v-card>
-              <v-img :src="currentPost.imageUrl" height="80vh"></v-img>
+              <v-img
+                :src="currentPost.imageUrl"
+                height="80vh"
+              />
             </v-card>
           </v-dialog>
           <v-card-text>
@@ -39,7 +61,11 @@
               v-for="(category, index) in currentPost.categories"
               :key="index"
             >
-              <v-chip class="mb-3" color="error" text-color="white">{{
+              <v-chip
+                class="mb-3"
+                color="error"
+                text-color="white"
+              >{{
                 category
               }}</v-chip>
             </span>
@@ -52,39 +78,60 @@
     </v-layout>
 
     <div class="mt-3">
-      <v-layout class="mb-3" v-if="isAuth">
+      <v-layout
+        v-if="isAuth"
+        class="mb-3"
+      >
         <v-flex xs12>
-          <v-form v-model="isFormValid" ref="form" lazy-validation>
+          <v-form
+            ref="form"
+            v-model="isFormValid"
+            lazy-validation
+          >
             <v-layout row>
               <v-flex xs12>
                 <v-text-field
-                  clearable
                   v-model="messageBody"
+                  clearable
                   prepend-icon="email"
                   :rules="messageRules"
                   :append-outer-icon="messageBody && 'send'"
                   label="Add message"
                   type="text"
-                  @click:append-outer="handlePostMessage"
                   required
-                ></v-text-field>
+                  @click:append-outer="handlePostMessage"
+                />
               </v-flex>
             </v-layout>
           </v-form>
         </v-flex>
       </v-layout>
-      <v-layout row wrap v-if="currentPost && currentPost.messages">
+      <v-layout
+        v-if="currentPost && currentPost.messages"
+        row
+        wrap
+      >
         <v-flex xs12>
-          <v-list subheader two-line>
-            <v-subheader
-              >Messages ({{ currentPost.messages.length }})</v-subheader
-            >
+          <v-list
+            subheader
+            two-line
+          >
+            <v-subheader>
+              Messages ({{ currentPost.messages.length }})
+            </v-subheader>
             <template v-if="currentPost.messages.length">
               <template v-for="message in currentPost.messages">
-                <v-divider :key="message._id"></v-divider>
-                <v-list-tile avatar inset :key="message.title">
+                <v-divider :key="message._id" />
+                <v-list-tile
+                  :key="message.title"
+                  avatar
+                  inset
+                >
                   <v-list-tile-avatar>
-                    <img :src="message.messageUser.avatar" alt="" />
+                    <img
+                      :src="message.messageUser.avatar"
+                      alt=""
+                    >
                   </v-list-tile-avatar>
                   <v-list-tile-content>
                     <v-list-tile-title>
@@ -92,13 +139,16 @@
                     </v-list-tile-title>
                     <v-list-tile-sub-title>
                       {{ message.messageUser.username }}
-                      <span class="grey--text text--lighten-1 hidden-xs-only"
-                        >{{ message.messageDate }}
+                      <span
+                        class="grey--text text--lighten-1 hidden-xs-only"
+                      >{{ message.messageDate }}
                       </span>
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
                   <v-list-tile-action class="hidden-xs-only">
-                    <v-icon color="grey">chat_bubble</v-icon>
+                    <v-icon color="grey">
+                      chat_bubble
+                    </v-icon>
                   </v-list-tile-action>
                 </v-list-tile>
               </template>
@@ -114,17 +164,6 @@
 import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Post",
-  mounted() {
-    const postId = this.$route.params.postId;
-    this.getPostById(postId);
-  },
-  watch: {
-    currentPost: {
-      immediate: true,
-      deep: true,
-      handler(post) {}
-    }
-  },
   data() {
     return {
       dialog: false,
@@ -135,6 +174,17 @@ export default {
         message => (message && message.length < 100) || "100 characters max"
       ]
     };
+  },
+  watch: {
+    currentPost: {
+      immediate: true,
+      deep: true,
+      handler(post) {}
+    }
+  },
+  mounted() {
+    const postId = this.$route.params.postId;
+    this.getPostById(postId);
   },
   computed: {
     ...mapGetters(["isAuth", "currentPost", "currentPostMessages", "me"])

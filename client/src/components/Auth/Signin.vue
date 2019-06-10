@@ -1,24 +1,45 @@
 <template>
-  <v-container class="signin" grid-list-md text-xs-center>
-    <v-layout row wrap class="mt-5">
-      <v-flex xs12 offset-md3 md6 class="signin__form">
+  <v-container
+    class="signin"
+    grid-list-md
+    text-xs-center
+  >
+    <v-layout
+      row
+      wrap
+      class="mt-5"
+    >
+      <v-flex
+        xs12
+        offset-md3
+        md6
+        class="signin__form"
+      >
         <transition name="bounce">
           <template v-if="loginError">
             <form-alert
               class="signin__form__alert"
               :message="loginError.message"
-            ></form-alert>
+            />
           </template>
         </transition>
         <v-card color="white">
-          <v-icon color="primary" class="mt-2" large>account_box</v-icon>
-          <div class="title primary--text font-weight-light">Login</div>
+          <v-icon
+            color="primary"
+            class="mt-2"
+            large
+          >
+            account_box
+          </v-icon>
+          <div class="title primary--text font-weight-light">
+            Login
+          </div>
           <v-form
             ref="form"
             v-model="valid"
             lazy-validation
-            @submit.prevent="login"
             class="ma-4 pa-2"
+            @submit.prevent="login"
           >
             <v-text-field
               v-model="username"
@@ -28,7 +49,7 @@
               label="Username"
               required
               :append-icon="'person'"
-            ></v-text-field>
+            />
             <v-text-field
               v-model="password"
               name="password"
@@ -40,7 +61,7 @@
               :type="show ? 'text' : 'password'"
               class="input-group--focused"
               @click:append="show = !show"
-            ></v-text-field>
+            />
             <v-btn
               type="submit"
               color="primary"
@@ -50,8 +71,8 @@
               :loading="userIsLoading"
               :disabled="!valid"
             >
-              Login</v-btn
-            >
+              Login
+            </v-btn>
           </v-form>
         </v-card>
       </v-flex>
@@ -77,6 +98,9 @@ export default {
       }
     };
   },
+  computed: {
+    ...mapGetters(["isAuth", "loginError", "userIsLoading"])
+  },
   watch: {
     isAuth: {
       immediate: true,
@@ -86,9 +110,6 @@ export default {
         }
       }
     }
-  },
-  computed: {
-    ...mapGetters(["isAuth", "loginError", "userIsLoading"])
   },
   methods: {
     ...mapActions(["loginUser"]),

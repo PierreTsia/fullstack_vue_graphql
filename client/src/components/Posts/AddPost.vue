@@ -5,8 +5,8 @@
         ref="form"
         v-model="valid"
         lazy-validation
-        @submit.prevent="handleAddPost"
         class="ma-4 pa-2"
+        @submit.prevent="handleAddPost"
       >
         <v-text-field
           v-model="title"
@@ -15,17 +15,47 @@
           placeholder=""
           label="Title"
           required
-        ></v-text-field>
+        />
         <v-layout row wrap>
           <v-flex xs5>
-            <v-text-field
+            <UploadImage
+              @uploaded="handleInputChange"
+              @error="handleError"
+              upload-preset="defaultPreset"
+              cloud-name="dd9kfvzbg"
+            >
+              <template v-if="isUploaded">
+                <div slot="imgPreview">
+                  <!-- Uploaded image -->
+                  <v-img
+                    v-if="isUploaded"
+                    :max-height="300"
+                    contain
+                    :src="imgSrc"
+                  />
+                  <!-- Delete button -->
+                  <div v-if="isUploaded">
+                    <v-btn
+                      class="ma-0"
+                      dark
+                      small
+                      color="error"
+                      @click="deleteImage()"
+                    >
+                      {{ deleteText }}
+                    </v-btn>
+                  </div>
+                </div>
+              </template>
+            </UploadImage>
+            <!--   <v-text-field
               v-model="imageUrl"
               name="imageUrl"
               :rules="[rules.required, rules.min]"
               placeholder=""
               label="Url"
               required
-            ></v-text-field>
+            />-->
           </v-flex>
           <v-flex xs5 offset-xs2>
             <v-select
@@ -34,17 +64,17 @@
               :rules="[rules.categories]"
               multiple
               @change="newGategories => (categories = newGategories)"
-            ></v-select>
+            />
           </v-flex>
         </v-layout>
 
         <v-textarea
-          name="description"
           v-model="description"
+          name="description"
           :rules="[rules.required, rules.description]"
           label="Description"
           value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
-        ></v-textarea>
+        />
         <v-layout row justify-end>
           <v-btn
             type="submit"
@@ -66,6 +96,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import UploadImage from "@/components/utils/UploadImage";
 export default {
   name: "AddPost",
   data() {
@@ -73,6 +104,7 @@ export default {
       title: "",
       description: "",
       imageUrl: "",
+      uploadedImage: null,
       categories: [],
       options: ["tech", "news", "art", "game"],
       valid: false,
@@ -88,11 +120,27 @@ export default {
       }
     };
   },
+  components: {
+    UploadImage
+  },
   computed: {
-    ...mapGetters(["me"])
+    ...mapGetters(["me"]),
+    isUploaded() {
+      return !!this.uploadedImage && this.uploadedImage.url;
+    },
+    imgSrc() {
+      return this.uploadedImage.url || "";
+    }
   },
   methods: {
     ...mapActions(["addPost"]),
+    handleInputChange(uploaded) {
+      console.log("uploaded", uploaded);
+      this.uploadedImage = uploaded;
+    },
+    handleError(e) {
+      console.error(e);
+    },
     handleAddPost() {
       if (this.$refs.form.validate()) {
         const payload = {
