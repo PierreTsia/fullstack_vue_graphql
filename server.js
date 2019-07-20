@@ -4,6 +4,7 @@ const path = require("path");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 const Post = require("./models/Post");
+const Tag = require("./models/Tag");
 
 const filePath = path.join(__dirname, "typeDefs.graphql");
 const typeDefs = fs.readFileSync(filePath, "utf-8");
@@ -44,7 +45,8 @@ const server = new ApolloServer({
   context: async ({ req }) => ({
     currentUser: await getUser(req.headers.authorization),
     User,
-    Post
+    Post,
+    Tag
   })
 });
 

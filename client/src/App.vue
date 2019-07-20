@@ -68,12 +68,31 @@
       <!-- Search Input -->
       <v-text-field
         flex
+        v-model="searchTerm"
+        @input="handleSearchPosts"
         prepend-icon="search"
         placeholder="Search posts"
         color="accent"
         single-line
         hide-details
       />
+
+      <v-card dark class="searchResultsCard" v-if="searchResults.length">
+        <v-list>
+          <v-list-tile
+            v-for="result in searchResults"
+            :key="result._id"
+            @click="handleGoToResult(result._id)"
+          >
+            <v-list-tile-title>
+              {{ result.title }} -
+              <span class="font-weight-thin">{{
+                formatDescriptionText(result.description)
+              }}</span>
+            </v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-card>
 
       <v-spacer />
 
@@ -98,7 +117,6 @@
           account_box
         </v-icon>
         <v-badge right color="blue darken-2">
-          <!-- <span slot="badge"></span> -->
           Profile
         </v-badge>
       </v-btn>
@@ -166,7 +184,8 @@ export default {
       sideNav: false,
       authSnackbar: false,
       authErrorSnackbar: false,
-      showSnack: true
+      showSnack: true,
+      searchTerm: ""
     };
   },
   computed: {
@@ -176,7 +195,8 @@ export default {
       "me",
       "loginError",
       "authError",
-      "isSnackShown"
+      "isSnackShown",
+      "searchResults"
     ]),
     sideNavItems() {
       return this.isAuth
@@ -221,9 +241,20 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["logout"]),
+    ...mapActions(["logout", "searchPosts", "clearSearchResults"]),
     handleSignoutUser() {
       this.logout();
+    },
+    handleSearchPosts() {
+      this.searchPosts({ searchTerm: this.searchTerm });
+    },
+    handleGoToResult(postId) {
+      this.searchTerm = "";
+      this.$router.push(`/post/${postId}`);
+      this.clearSearchResults();
+    },
+    formatDescriptionText(text) {
+      return text.length > 50 ? `${text.slice(0, 50)}...` : text;
     }
   }
 };
@@ -254,4 +285,12 @@ export default {
     display flex
     align-items flex-start
     flex-direction row
+
+.searchResultsCard
+  position absolute
+  width 100vw
+  z-index 8
+  top 60px
+  left 0%
+  cursor pointer
 </style>

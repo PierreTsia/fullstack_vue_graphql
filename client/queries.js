@@ -33,7 +33,11 @@ export const GET_POST_BY_ID = gql`
     getPostById(postId: $postId) {
       _id
       title
-      categories
+      categories {
+        _id
+        label
+        color
+      }
       description
       createdDate
       messages {
@@ -84,6 +88,18 @@ export const INFINITE_SCROLL_POSTS = gql`
   }
 `;
 
+export const SEARCH_POSTS = gql`
+  query($searchTerm: String) {
+    searchPosts(searchTerm: $searchTerm) {
+      _id
+      title
+      description
+      imageUrl
+      likes
+    }
+  }
+`;
+
 export const LIKE_POST = gql`
   mutation($postId: ID!, $userId: ID!) {
     likePost(postId: $postId, userId: $userId) {
@@ -98,6 +114,18 @@ export const UNLIKE_POST = gql`
     unlikePost(postId: $postId, userId: $userId) {
       postId
       userIds
+    }
+  }
+`;
+
+/* Tags Quries*/
+
+export const GET_TAGS = gql`
+  query {
+    getTags {
+      _id
+      label
+      color
     }
   }
 `;
@@ -125,7 +153,8 @@ export const ADD_POST = gql`
   mutation(
     $title: String!
     $imageUrl: String!
-    $categories: [String]!
+    $categories: [ID]!
+    $newTagsLabels: [String]
     $description: String!
     $creatorId: ID!
   ) {
@@ -133,12 +162,17 @@ export const ADD_POST = gql`
       title: $title
       imageUrl: $imageUrl
       categories: $categories
+      newTagsLabels: $newTagsLabels
       description: $description
       creatorId: $creatorId
     ) {
       _id
       title
-      categories
+      categories {
+        _id
+        label
+        color
+      }
       description
       imageUrl
       likes

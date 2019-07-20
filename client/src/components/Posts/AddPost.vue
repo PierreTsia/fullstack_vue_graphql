@@ -19,10 +19,10 @@
         <v-layout row wrap>
           <v-flex xs5 class="uploadPreview">
             <UploadImage
-              @uploaded="handleInputChange"
-              @error="handleError"
               upload-preset="defaultPreset"
               cloud-name="dd9kfvzbg"
+              @uploaded="handleInputChange"
+              @error="handleError"
             >
               <template v-if="isUploaded">
                 <div slot="imgPreview">
@@ -37,14 +37,8 @@
               </template>
             </UploadImage>
           </v-flex>
-          <v-flex xs5 offset-xs2>
-            <v-select
-              :items="options"
-              label="Categories"
-              :rules="[rules.categories]"
-              multiple
-              @change="newGategories => (categories = newGategories)"
-            />
+          <v-flex xs12>
+            <Combobox :existing-tags="tags" @onTagsChanged="handleTagsUpdate" />
           </v-flex>
         </v-layout>
 
@@ -77,8 +71,13 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import UploadImage from "@/components/utils/UploadImage";
+import Combobox from "@/components/utils/Combobox";
 export default {
   name: "AddPost",
+  components: {
+    UploadImage,
+    Combobox
+  },
   data() {
     return {
       title: "",
@@ -86,9 +85,10 @@ export default {
       imageUrl: "",
       uploadedImage: null,
       categories: [],
-      options: ["tech", "news", "art", "game"],
+      options: [],
       valid: false,
       items: [],
+      inputValue: "",
       rules: {
         required: value => !!value || "Field required",
         min: value => value.trim().length >= 4 || "Minimum 4 characters",
@@ -100,11 +100,8 @@ export default {
       }
     };
   },
-  components: {
-    UploadImage
-  },
   computed: {
-    ...mapGetters(["me"]),
+    ...mapGetters(["me", "searchResults", "tags"]),
     isUploaded() {
       return !!this.uploadedImage && this.uploadedImage.url;
     },
@@ -113,13 +110,19 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["addPost"]),
+    ...mapActions(["addPost", "getTags"]),
     handleInputChange(uploaded) {
-      console.log("uploaded", uploaded);
       this.uploadedImage = uploaded;
     },
     handleError(e) {
       console.error(e);
+    },
+
+    handleTagsUpdate(tags) {
+      console.log(tags);
+      this.categories = tags.map(tag => {
+        return tag._id ? tag : { label: tag, color: "primary" };
+      });
     },
     handleAddPost() {
       if (this.$refs.form.validate() && this.imgSrc.length) {
@@ -127,13 +130,17 @@ export default {
           title: this.title,
           description: this.description,
           imageUrl: this.imgSrc,
-          categories: [...this.categories],
+          categories: this.categories.filter(c => c._id).map(c => c._id),
+          newTagsLabels: this.categories.filter(c => !c._id).map(c => c.label),
           creatorId: this.me._id
         };
         this.addPost(payload);
         this.$router.push("/posts");
       }
     }
+  },
+  async mounted() {
+    await this.getTags();
   }
 };
 </script>

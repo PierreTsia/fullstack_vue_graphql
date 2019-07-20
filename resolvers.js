@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { partition } = require("lodash");
 
 const createToken = (user, secret, expiresIn) => {
   const { username, email } = user;
@@ -8,6 +9,11 @@ const createToken = (user, secret, expiresIn) => {
 
 module.exports = {
   Query: {
+    /*
+|--------------------------------------------------------------------------
+|                      QUERIES POSTS
+|--------------------------------------------------------------------------
+*/
     getPosts: async (_, { limit }, { Post }) => {
       const posts = Post.find({})
         .limit(limit)
@@ -21,28 +27,19 @@ module.exports = {
         ]);
       return posts;
     },
-    getPostById: async (_, { postId }, { currentUser, Post }) => {
+    getPostById: async (_, { postId }, { currentUser, Post, Tag }) => {
       const post = await Post.findById(postId).populate([
         {
           path: "createdBy",
           model: "User"
         },
+        {
+          path: "categories",
+          model: "Tag"
+        },
         { path: "messages.messageUser", model: "User" }
       ]);
       return post;
-    },
-    getCurrentUser: async (_, args, { User, currentUser }) => {
-      if (!currentUser) {
-        return null;
-      }
-      const user = await User.findOne({
-        username: currentUser.username
-      }).populate({
-        path: "favorites",
-        model: "Post"
-      });
-
-      return user;
     },
     infiniteScrollPosts: async (_, { pageNum, pageSize }, { Post }) => {
       let posts;
@@ -66,19 +63,74 @@ module.exports = {
       const totalDocs = await Post.countDocuments();
       const hasMore = totalDocs > pageSize * pageNum;
       return { posts, hasMore };
+    },
+    searchPosts: async (_, { searchTerm }, { Post }) => {
+      if (searchTerm) {
+        const searchResults = await Post.find(
+          // Perform text search for search value of 'searchTerm'
+          { $text: { $search: searchTerm } },
+          // Assign 'searchTerm' a text score to provide best match
+          { score: { $meta: "textScore" } }
+          // Sort results according to that textScore (as well as by likes in descending order)
+        )
+          .sort({
+            score: { $meta: "textScore" },
+            likes: "desc"
+          })
+          .limit(5);
+        return searchResults;
+      }
+    },
+    /*
+|--------------------------------------------------------------------------
+|                    QUERIES   USER
+|--------------------------------------------------------------------------
+*/
+    getCurrentUser: async (_, args, { User, currentUser }) => {
+      if (!currentUser) {
+        return null;
+      }
+      const user = await User.findOne({
+        username: currentUser.username
+      }).populate({
+        path: "favorites",
+        model: "Post"
+      });
+
+      return user;
+    },
+    /*
+|--------------------------------------------------------------------------
+|                     QUERIES  TAGS
+|--------------------------------------------------------------------------
+*/
+    getTags: async (_, args, { Tag }) => {
+      const tags = await Tag.find({});
+      return tags;
     }
   },
+
+  /*
+|--------------------------------------------------------------------------
+|                     MUTATION   POSTS
+|--------------------------------------------------------------------------
+*/
   Mutation: {
     addPost: async (
       _,
-      { title, imageUrl, description, categories, creatorId },
-      { Post }
+      { title, imageUrl, description, categories, newTagsLabels, creatorId },
+      { Post, Tag }
     ) => {
+      const tags = categories;
+      for (const tag of newTagsLabels) {
+        const newTag = await new Tag({ label: tag, color: "primary" }).save();
+        tags.push(newTag._id);
+      }
       const newPost = await new Post({
         title,
         imageUrl,
         description,
-        categories,
+        categories: tags,
         createdBy: creatorId
       }).save();
       return newPost;
@@ -118,13 +170,15 @@ module.exports = {
         { $pull: { likes: userId } },
         { new: true }
       );
-
-      console.log(post);
-
       const userIds = post.likes;
       return { postId: post._id, userIds };
     },
 
+    /*
+|--------------------------------------------------------------------------
+|                    MUTATIONS   USERS
+|--------------------------------------------------------------------------
+*/
     signupUser: async (_, { username, email, password }, { User }) => {
       const existingUser = await User.findOne({ username });
       if (existingUser) {
@@ -149,6 +203,28 @@ module.exports = {
         throw new Error("password is incorrect");
       }
       return { token: createToken(user, process.env.SECRET, "1hr") };
+    },
+
+    /*
+|--------------------------------------------------------------------------
+|                  MUTATION TAGS
+|--------------------------------------------------------------------------
+*/
+
+    addNewTag: async (_, { label, color }, { Tag, User, currentUser }) => {
+      if (!currentUser) {
+        return new Error(
+          "Unauthorized : must be signed in to register a new tag"
+        );
+      }
+      const user = await User.findOne({
+        username: currentUser.username
+      });
+      const newTag = await new Tag({
+        label,
+        color
+      }).save();
+      return newTag;
     }
   }
 };

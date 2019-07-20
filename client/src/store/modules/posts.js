@@ -7,7 +7,8 @@ import {
   INFINITE_SCROLL_POSTS,
   ADD_POST_MESSAGE,
   LIKE_POST,
-  UNLIKE_POST
+  UNLIKE_POST,
+  SEARCH_POSTS
 } from "../../../queries";
 import * as types from "../mutation-types";
 import router from "../../router";
@@ -18,14 +19,16 @@ export const state = {
   currentPost: null,
   postError: null,
   postMessageError: null,
-  hasMore: false
+  hasMore: false,
+  searchResults: []
 };
 const getters = {
   postsAreLoading: state => state.postsAreLoading,
   posts: state => state.posts,
   currentPost: state => state.currentPost,
   currentPostMessages: state =>
-    state.currentPost ? state.currentPost.messages : []
+    state.currentPost ? state.currentPost.messages : [],
+  searchResults: state => state.searchResults
 };
 const actions = {
   addPostMessage({ commit }, payload) {
@@ -37,9 +40,7 @@ const actions = {
         variables: payload
       })
       .then(({ data }) => {
-        console.log("data", data);
         const { addPostMessage } = data;
-        console.log("addpostyMess", addPostMessage);
         commit(types.SET_POST_MESSAGE_SUCCESS, {
           postId,
           message: addPostMessage
@@ -136,6 +137,20 @@ const actions = {
         commit(types.SET_POST_ERROR, e);
       })
       .finally(() => commit(types.SET_POSTS_LOADING, false));
+  },
+
+  searchPosts({ commit }, payload) {
+    apolloClient
+      .query({ query: SEARCH_POSTS, variables: payload })
+      .then(({ data }) => {
+        if (data.searchPosts) {
+          commit(types.SEARCH_POSTS_SUCCESS, data.searchPosts);
+        }
+      })
+      .catch(e => console.log(e));
+  },
+  clearSearchResults({ commit }) {
+    commit(types.SEARCH_POSTS_SUCCESS, []);
   }
 };
 export const mutations = {
@@ -170,7 +185,9 @@ export const mutations = {
     if (state.currentPost._id === postId) {
       state.currentPost.likes = userIds;
     }
-  }
+  },
+  [types.SEARCH_POSTS_SUCCESS]: (state, payload) =>
+    (state.searchResults = payload)
 };
 export default {
   state,

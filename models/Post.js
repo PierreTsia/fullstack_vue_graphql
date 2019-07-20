@@ -10,7 +10,7 @@ const PostSchema = new mongoose.Schema({
     required: true
   },
   categories: {
-    type: [String],
+    type: [mongoose.Schema.Types.ObjectId],
     required: true
   },
   description: {
@@ -48,6 +48,10 @@ const PostSchema = new mongoose.Schema({
       }
     }
   ]
+});
+
+PostSchema.index({
+  "$**": "text"
 });
 
 module.exports = mongoose.model("Post", PostSchema);

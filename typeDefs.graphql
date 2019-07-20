@@ -8,11 +8,17 @@ type User {
   favorites: [Post]
 }
 
+type Tag {
+  _id: ID
+  label: String
+  color: String
+}
+
 type Post {
   _id: ID
   title: String!
   imageUrl: String!
-  categories: [String]!
+  categories: [Tag]
   description: String!
   createdDate: String
   likes: [ID]
@@ -41,18 +47,29 @@ type LikeSchema {
   userIds: [ID]!
 }
 
+
 type Mutation {
   signupUser(username: String!, email: String!, password: String!): Token
   signinUser(username: String!, password: String!): Token
-  addPost(title: String!, imageUrl: String!, categories:[String]!, description: String!, creatorId: ID!): Post!
-  addPostMessage(postId: ID!, messageUserId: ID!, messageBody: String!):Message
-  likePost(postId: ID!, userId: ID!):LikeSchema
-  unlikePost(postId: ID!, userId: ID!):LikeSchema
+  addPost(
+    title: String!
+    imageUrl: String!
+    categories: [ID]!
+    newTagsLabels: [String]
+    description: String!
+    creatorId: ID!
+  ): Post!
+  addPostMessage(postId: ID!, messageUserId: ID!, messageBody: String!): Message
+  likePost(postId: ID!, userId: ID!): LikeSchema
+  unlikePost(postId: ID!, userId: ID!): LikeSchema
+  addNewTag(label: String!, color: String!): Tag!
 }
 
 type Query {
-  getCurrentUser: User,
-  getPosts(limit: Int ): [Post],
-  getPostById (postId: ID!):Post,
-  infiniteScrollPosts(pageNum: Int!, pageSize: Int!):PostsPage
+  getCurrentUser: User
+  getPosts(limit: Int): [Post]
+  getTags: [Tag]
+  getPostById(postId: ID!): Post
+  infiniteScrollPosts(pageNum: Int!, pageSize: Int!): PostsPage
+  searchPosts(searchTerm: String): [Post]
 }
