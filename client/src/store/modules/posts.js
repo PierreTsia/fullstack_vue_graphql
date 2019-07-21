@@ -96,7 +96,6 @@ const actions = {
         variables: payload
       })
       .then(({ data }) => {
-        console.log(data);
         const { hasMore, posts } = data.infiniteScrollPosts;
         commit(types.SET_MERGE_POSTS, { hasMore, posts });
       })

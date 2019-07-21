@@ -118,8 +118,7 @@ export default {
       console.error(e);
     },
 
-    handleTagsUpdate(tags) {
-      console.log(tags);
+    async handleTagsUpdate(tags) {
       this.categories = tags.map(tag => {
         return tag._id ? tag : { label: tag, color: "primary" };
       });

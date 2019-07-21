@@ -1,6 +1,6 @@
 <template>
   <v-combobox
-    :items="items2"
+    :items="items"
     :search-input.sync="search"
     :hide-no-data="!search"
     v-model="model"
@@ -62,18 +62,8 @@ export default {
       editing: null,
       index: -1,
       header: { header: "Select an option or create one" },
-      items2: [],
+      items: [],
       model: [],
-      items: [
-        {
-          text: "Foo",
-          color: "blue"
-        },
-        {
-          text: "Bar",
-          color: "red"
-        }
-      ],
       nonce: 1,
       menu: false,
 
@@ -86,7 +76,7 @@ export default {
     existingTags: {
       immediate: true,
       handler(tags) {
-        this.items2 = [this.header, ...tags];
+        this.items = [this.header, ...tags];
       }
     },
     model(val, prev) {
