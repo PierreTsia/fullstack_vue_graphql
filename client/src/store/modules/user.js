@@ -1,5 +1,5 @@
 import { defaultClient as apolloClient } from "../../main";
-import { GET_CURRENT_USER, SIGNIN_USER, SIGNUP_USER } from "../../../queries";
+import { GET_CURRENT_USER, SIGNIN_USER, SIGNUP_USER, } from "../../../queries";
 import router from "../../router";
 import * as types from "../mutation-types";
 

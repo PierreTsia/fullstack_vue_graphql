@@ -3,7 +3,8 @@ import {
   ADD_POST,
   GET_POST_BY_ID,
   GET_POSTS,
-  SIGNIN_USER,
+  DELETE_POST,
+  GET_FAVORITE_POSTS,
   INFINITE_SCROLL_POSTS,
   ADD_POST_MESSAGE,
   LIKE_POST,
@@ -20,7 +21,8 @@ export const state = {
   postError: null,
   postMessageError: null,
   hasMore: false,
-  searchResults: []
+  searchResults: [],
+  favoritePosts: []
 };
 const getters = {
   postsAreLoading: state => state.postsAreLoading,
@@ -28,7 +30,11 @@ const getters = {
   currentPost: state => state.currentPost,
   currentPostMessages: state =>
     state.currentPost ? state.currentPost.messages : [],
-  searchResults: state => state.searchResults
+  searchResults: state => state.searchResults,
+  favoritePosts: state => ({
+    count: state.favoritePosts.length,
+    posts: state.favoritePosts
+  })
 };
 const actions = {
   addPostMessage({ commit }, payload) {
@@ -67,6 +73,23 @@ const actions = {
         console.log(e);
       })
       .finally(() => commit(types.SET_POSTS_LOADING, false));
+  },
+
+  deletePost({ commit }, postId) {
+    console.log("deletePostACtion", postId);
+    commit(types.SET_POSTS_LOADING, true);
+    apolloClient
+      .mutate({
+        mutation: DELETE_POST,
+        variables: { postId }
+      })
+      .then(({ data }) => {
+        commit(types.DELETE_POST_SUCCESS, data.deletePost);
+      })
+      .catch(e => console.log(e))
+      .finally(() => {
+        commit(types.SET_POSTS_LOADING, false);
+      });
   },
 
   likePost({ commit }, payload) {
@@ -148,6 +171,18 @@ const actions = {
       })
       .catch(e => console.log(e));
   },
+  getFavoritePosts({ commit }, userId) {
+    apolloClient
+      .query({
+        query: GET_FAVORITE_POSTS,
+        variables: { userId }
+      })
+      .then(({ data }) => {
+        commit(types.SET_FAVORITE_POSTS_SUCCESS, data.getFavoritePosts);
+      })
+      .catch(e => console.log(e))
+      .finally();
+  },
   clearSearchResults({ commit }) {
     commit(types.SEARCH_POSTS_SUCCESS, []);
   }
@@ -186,7 +221,12 @@ export const mutations = {
     }
   },
   [types.SEARCH_POSTS_SUCCESS]: (state, payload) =>
-    (state.searchResults = payload)
+    (state.searchResults = payload),
+  [types.DELETE_POST_SUCCESS]: (state, postId) => {
+    state.posts = state.posts.filter(p => p._id !== postId);
+  },
+  [types.SET_FAVORITE_POSTS_SUCCESS]: (state, posts) =>
+    (state.favoritePosts = posts)
 };
 export default {
   state,

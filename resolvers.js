@@ -81,6 +81,15 @@ module.exports = {
         return searchResults;
       }
     },
+
+    getFavoritePosts: async (_, { userId }, { Post }) => {
+      const posts = await Post.find({ likes: userId }).populate([
+        { path: "createdBy", model: "User" },
+        { path: "categories", model: "Tag" }
+      ]);
+      return posts;
+    },
+
     /*
 |--------------------------------------------------------------------------
 |                    QUERIES   USER
@@ -135,7 +144,33 @@ module.exports = {
       }).save();
       return newPost;
     },
+    deletePost: async (_, { postId }, { Post, User, currentUser }) => {
+      if (!currentUser) {
+        throw new Error("Unauthorized: No user found ");
+      }
+      const user = await User.findOne({
+        username: currentUser.username
+      });
+      console.log("user", user);
+      const post = await Post.findById(postId);
+      console.log("post", post);
+      if (!post) {
+        throw new Error("No post found");
+      }
+      if (!post.createdBy.equals(user._id)) {
+        console.log("post createdBy", post.createdBy);
+        console.log("userId", user._id);
+        throw new Error("Unauthorized : must be creator to delete post");
+      }
 
+      const deletedPost = await Post.deleteOne({ _id: postId });
+      console.log(deletedPost);
+      if (deletedPost.deletedCount === 1) {
+        return postId;
+      } else {
+        throw new Error("Failed");
+      }
+    },
     addPostMessage: async (
       _,
       { postId, messageBody, messageUserId },
@@ -217,9 +252,7 @@ module.exports = {
           "Unauthorized : must be signed in to register a new tag"
         );
       }
-      const user = await User.findOne({
-        username: currentUser.username
-      });
+
       const newTag = await new Tag({
         label,
         color

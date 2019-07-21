@@ -7,6 +7,7 @@ import AddPost from "./components/Posts/AddPost";
 import Profile from "./components/Auth/Profile";
 import Signin from "./components/Auth/Signin";
 import Signup from "./components/Auth/Signup";
+import SandBox from "./components/SandBox";
 import AuthGuard from "./AuthGuard";
 
 Vue.use(Router);
@@ -51,6 +52,11 @@ export default new Router({
       path: "/signup",
       name: "signup",
       component: Signup
+    },
+    {
+      path: "/_sandbox",
+      name: "sandbox",
+      component: SandBox
     }
   ]
 });

@@ -1,101 +1,15 @@
 <template>
   <div class="posts">
     <div class="postsGrid">
-      <v-card
-        v-for="(item, index) in posts"
-        :id="index"
-        :key="item._id"
-        hover
-        class="postCard"
-        height="400"
-      >
-        <v-img
-          lazy
-          class="postImage"
-          :src="item.imageUrl"
-          aspect-ratio="2.75"
-          :style="{
-            height: isMorePostInfosShown(item._id) ? '80px' : 'auto'
-          }"
-          @click="handlePostClick(item)"
-        />
-        <v-card-title
-          class="postTitle"
-          primary-title
-        >
-          <h3
-            :class="[
-              'font-weight-bold',
-              'headline',
-              'mb-0',
-              isMorePostInfosShown(item._id) ? '--isLarge' : '--isSmall'
-            ]"
-          >
-            {{ item.title }}
-          </h3>
-          <div
-            :class="[
-              'description',
-              isMorePostInfosShown(item._id) ? '--isLarge' : '--isSmall'
-            ]"
-          >
-            {{ item.description }}
-          </div>
-          <div class="cardContent font-weight-regular secondary--text mt-2">
-            <span class="postTitle__infos">{{ item.likes.length }} likes</span>
-            <span
-              class="postTitle__infos"
-            >{{ item.messages.length }} comments</span>
-            <div class="postShowMoreInfos">
-              <v-btn
-                flat
-                icon
-                @click="showMorePostInfos(item._id)"
-              >
-                <v-icon
-                  v-if="isMorePostInfosShown(item._id)"
-                  class=""
-                >
-                  expand_more
-                </v-icon>
-                <v-icon
-                  v-else
-                  class=""
-                >
-                  expand_less
-                </v-icon>
-              </v-btn>
-            </div>
-          </div>
-        </v-card-title>
-        <v-layout
-          v-if="isMorePostInfosShown(item._id)"
-          row
-          align-end
-          justify-start
-          class="pl-4 pb-4"
-        >
-          <v-avatar
-            :size="36"
-            color="grey lighten-4"
-            class="mr-4"
-          >
-            <img
-              :src="item.createdBy.avatar"
-              alt="avatar"
-            >
-          </v-avatar>
-          <span class="subheading pb-1">{{ item.createdBy.username }}</span>
-        </v-layout>
-      </v-card>
+      <PostCardItem
+        v-for="post in posts"
+        :key="post._id"
+        :item="post"
+        @onDeleteClick="handleDeletePost"
+      />
     </div>
     <div class="showMore">
-      <v-btn
-        fab
-        large
-        color="primary"
-        @click="showMorePosts"
-      >
+      <v-btn fab large color="primary" @click="showMorePosts">
         <v-icon dark>
           add
         </v-icon>
@@ -106,15 +20,18 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import PostCardItem from "@/components/Posts/PostCardItem";
 
 export default {
   name: "Posts",
+  components: {
+    PostCardItem
+  },
   data() {
     return {
       pageNum: 1,
       pageSize: 6,
-      showMoreEnabled: false,
-      showMoreInfoPostIds: []
+      showMoreEnabled: false
     };
   },
   watch: {},
@@ -127,15 +44,11 @@ export default {
     ...mapGetters(["posts"])
   },
   methods: {
-    ...mapActions(["getPosts", "infiniteScrollPosts"]),
-    handlePostClick(item) {
-      this.$router.push(`post/${item._id}`);
-    },
+    ...mapActions(["getPosts", "infiniteScrollPosts", "deletePost"]),
 
-    showMorePostInfos(postId) {
-      this.showMoreInfoPostIds = this.showMoreInfoPostIds.includes(postId)
-        ? this.showMoreInfoPostIds.filter(id => id !== postId)
-        : [...this.showMoreInfoPostIds, postId];
+    async handleDeletePost(postId) {
+      console.log(postId);
+      await this.deletePost(postId);
     },
 
     showMorePosts() {
@@ -144,9 +57,6 @@ export default {
         pageNum: this.pageNum,
         pageSize: this.pageSize
       });
-    },
-    isMorePostInfosShown(postId) {
-      return this.showMoreInfoPostIds.includes(postId);
     }
   }
 };

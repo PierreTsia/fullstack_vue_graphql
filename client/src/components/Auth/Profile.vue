@@ -10,7 +10,7 @@
           <v-flex xs7>
             <v-card-title primary-title>
               <div>
-                <div class="headline">{{me.username}}</div>
+                <div class="headline">{{ me.username }}</div>
               </div>
             </v-card-title>
           </v-flex>
@@ -25,7 +25,7 @@ import { mapGetters } from "vuex";
 export default {
   name: "Profile",
   computed: {
-    ...mapGetters(["me"])
+    ...mapGetters(["me", "favoritePosts"])
   }
 };
 </script>

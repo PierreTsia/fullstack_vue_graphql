@@ -100,6 +100,25 @@ export const SEARCH_POSTS = gql`
   }
 `;
 
+export const GET_FAVORITE_POSTS = gql`
+  query($userId: ID!) {
+    getFavoritePosts(userId: $userId) {
+      _id
+      title
+      createdBy {
+        _id
+        username
+        avatar
+      }
+      categories {
+        _id
+        label
+      }
+      likes
+    }
+  }
+`;
+
 export const LIKE_POST = gql`
   mutation($postId: ID!, $userId: ID!) {
     likePost(postId: $postId, userId: $userId) {
@@ -168,6 +187,9 @@ export const ADD_POST = gql`
     ) {
       _id
       title
+      createdBy {
+        _id
+      }
       categories {
         _id
         label
@@ -180,6 +202,12 @@ export const ADD_POST = gql`
         _id
       }
     }
+  }
+`;
+
+export const DELETE_POST = gql`
+  mutation($postId: ID!) {
+    deletePost(postId: $postId)
   }
 `;
 

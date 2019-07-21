@@ -117,6 +117,9 @@
           account_box
         </v-icon>
         <v-badge right color="blue darken-2">
+          <template v-slot:badge>
+            {{ favoritePosts.count }}
+          </template>
           Profile
         </v-badge>
       </v-btn>
@@ -196,7 +199,8 @@ export default {
       "loginError",
       "authError",
       "isSnackShown",
-      "searchResults"
+      "searchResults",
+      "favoritePosts"
     ]),
     sideNavItems() {
       return this.isAuth
@@ -225,9 +229,10 @@ export default {
   watch: {
     me: {
       immediate: true,
-      handler(newValue, oldValue) {
+      async handler(newValue, oldValue) {
         if (oldValue === null && newValue) {
           this.authSnackbar = true;
+          await this.getFavoritePosts(newValue._id);
         }
       }
     },
@@ -240,8 +245,14 @@ export default {
       }
     }
   },
+
   methods: {
-    ...mapActions(["logout", "searchPosts", "clearSearchResults"]),
+    ...mapActions([
+      "logout",
+      "searchPosts",
+      "clearSearchResults",
+      "getFavoritePosts"
+    ]),
     handleSignoutUser() {
       this.logout();
     },
