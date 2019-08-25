@@ -28,3 +28,6 @@ export const SET_ALL_TAGS = "SET_ALL_TAGS";
 /* APP */
 export const SHOW_SNACK = "SHOW_SNACK";
 export const HIDE_SNACK = "HIDE_SNACK";
+
+/*  PROFILES  */
+export const CREATE_PROFILE_SUCESS = "CREATE_PROFILE_SUCESS";

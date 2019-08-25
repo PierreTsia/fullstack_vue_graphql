@@ -1,5 +1,5 @@
 import { defaultClient as apolloClient } from "../../main";
-import { GET_CURRENT_USER, SIGNIN_USER, SIGNUP_USER, } from "../../../queries";
+import { GET_CURRENT_USER, SIGNIN_USER, SIGNUP_USER } from "../../../queries";
 import router from "../../router";
 import * as types from "../mutation-types";
 
@@ -91,7 +91,9 @@ export const mutations = {
   [types.SET_LOGIN_SUCCESS]: state => (state.error = null),
   [types.SET_SIGNUP_SUCCESS]: state => (state.signupError = null),
   [types.SET_AUTH_ERROR]: (state, payload) => (state.authError = payload),
-  [types.SET_SIGNUP_ERROR]: (state, payload) => (state.signupError = payload)
+  [types.SET_SIGNUP_ERROR]: (state, payload) => (state.signupError = payload),
+  [types.CREATE_PROFILE_SUCESS]: (state, { profile }) =>
+    (state.currentUser = { ...state.currentUser, profile })
 };
 export default {
   state,
