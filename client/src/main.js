@@ -1,5 +1,6 @@
 import "@babel/polyfill";
 import Vue from "vue";
+import DateService from "@/services/DateService";
 import "./plugins/vuetify";
 import App from "./App.vue";
 import router from "./router";
@@ -12,6 +13,7 @@ import FormAlert from "@/components/utils/FormAlert";
 Vue.component("form-alert", FormAlert);
 
 Vue.use(VueApollo);
+Vue.prototype.$date = new DateService(() => "en");
 
 // Setup ApolloClient
 export const defaultClient = new ApolloClient({

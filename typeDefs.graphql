@@ -1,11 +1,40 @@
 type User {
   _id: ID
   username: String!
+  profile: Profile
   email: String!
   password: String!
   avatar: String
   joinDate: String
   favorites: [Post]
+}
+
+type Profile {
+  _id: ID
+  user: User!
+  DateOfBirth: String
+  gender: String
+  bio: String
+  friends: [User]
+  country: Country
+  bannerUrl: String
+  subscriptions: [Tag]
+  social: Social
+}
+
+type Country {
+  name: String
+  code: String
+}
+
+type Social {
+  youtube: String
+  twitch: String
+  twitter: String
+  facebook: String
+  github: String
+  linkedin: String
+  instagram: String
 }
 
 type Tag {
@@ -20,6 +49,7 @@ type Post {
   imageUrl: String!
   categories: [Tag]
   description: String!
+  content: String!
   createdDate: String
   likes: [ID]
   createdBy: User!
@@ -47,22 +77,54 @@ type LikeSchema {
   userIds: [ID]!
 }
 
+input CountryInput {
+  name: String
+  code: String
+}
+
+input ProfileInput {
+  profileId: ID
+  userId: ID!
+  DateOfBirth: String
+  gender: String
+  bio: String
+  country: CountryInput
+  bannerUrl: String
+  subscriptions: [ID]
+  social: SocialInput
+}
+
+input SocialInput {
+  youtube: String
+  twitch: String
+  twitter: String
+  facebook: String
+  github: String
+  linkedin: String
+  instagram: String
+}
+
+input PostInput {
+  title: String!
+  imageUrl: String!
+  categories: [ID]!
+  newTagsLabels: [String]
+  description: String!
+  content: String!
+  creatorId: ID!
+}
+
 type Mutation {
   signupUser(username: String!, email: String!, password: String!): Token
   signinUser(username: String!, password: String!): Token
-  addPost(
-    title: String!
-    imageUrl: String!
-    categories: [ID]!
-    newTagsLabels: [String]
-    description: String!
-    creatorId: ID!
-  ): Post!
+  addPost(post: PostInput!): Post!
   deletePost(postId: ID): ID
   addPostMessage(postId: ID!, messageUserId: ID!, messageBody: String!): Message
   likePost(postId: ID!, userId: ID!): LikeSchema
   unlikePost(postId: ID!, userId: ID!): LikeSchema
   addNewTag(label: String!, color: String!): Tag!
+  addProfile(profile: ProfileInput): Profile!
+  updateProfile(profile: ProfileInput): Profile!
 }
 
 type Query {
@@ -73,4 +135,6 @@ type Query {
   getPostById(postId: ID!): Post
   infiniteScrollPosts(pageNum: Int!, pageSize: Int!): PostsPage
   searchPosts(searchTerm: String): [Post]
+  profileByUserId(userId: ID!): Profile
+  profileById(profileId: ID!): Profile
 }

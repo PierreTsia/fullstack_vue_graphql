@@ -59,12 +59,13 @@ const actions = {
       .finally(() => commit(types.SET_POSTS_LOADING, false));
   },
 
-  addPost({ commit }, payload) {
+  addPost({ commit }, post) {
     commit(types.SET_POSTS_LOADING, true);
+    console.log({ post });
     apolloClient
       .mutate({
         mutation: ADD_POST,
-        variables: payload
+        variables: { post }
       })
       .then(({ data }) => {
         commit(types.ADD_POST_SUCCESS, data.addPost);

@@ -8,128 +8,22 @@ const createToken = (user, secret, expiresIn) => {
 };
 
 module.exports = {
-  Query: {
-    /*
-|--------------------------------------------------------------------------
-|                      QUERIES POSTS
-|--------------------------------------------------------------------------
-*/
-    getPosts: async (_, { limit }, { Post }) => {
-      const posts = Post.find({})
-        .limit(limit)
-        .sort({ createdDate: "desc" })
-        .populate([
-          {
-            path: "createdBy",
-            model: "User"
-          },
-          { path: "messages.messageUser", model: "User" }
-        ]);
-      return posts;
-    },
-    getPostById: async (_, { postId }, { currentUser, Post, Tag }) => {
-      const post = await Post.findById(postId).populate([
-        {
-          path: "createdBy",
-          model: "User"
-        },
-        {
-          path: "categories",
-          model: "Tag"
-        },
-        { path: "messages.messageUser", model: "User" }
-      ]);
-      return post;
-    },
-    infiniteScrollPosts: async (_, { pageNum, pageSize }, { Post }) => {
-      let posts;
-      if (pageNum === 1) {
-        posts = await Post.find({})
-          .sort({ createdDate: "desc" })
-          .populate([
-            { path: "createdBy", model: "User" },
-            { path: "messages.messageUser", model: "User" }
-          ])
-          .limit(pageSize);
-      } else {
-        const skips = pageSize * (pageNum - 1);
-        posts = await Post.find({})
-          .sort({ createdDate: "desc" })
-          .skip(skips)
-          .populate({ path: "createdBy", model: "User" })
-          .limit(pageSize);
-      }
-
-      const totalDocs = await Post.countDocuments();
-      const hasMore = totalDocs > pageSize * pageNum;
-      return { posts, hasMore };
-    },
-    searchPosts: async (_, { searchTerm }, { Post }) => {
-      if (searchTerm) {
-        const searchResults = await Post.find(
-          // Perform text search for search value of 'searchTerm'
-          { $text: { $search: searchTerm } },
-          // Assign 'searchTerm' a text score to provide best match
-          { score: { $meta: "textScore" } }
-          // Sort results according to that textScore (as well as by likes in descending order)
-        )
-          .sort({
-            score: { $meta: "textScore" },
-            likes: "desc"
-          })
-          .limit(5);
-        return searchResults;
-      }
-    },
-
-    getFavoritePosts: async (_, { userId }, { Post }) => {
-      const posts = await Post.find({ likes: userId }).populate([
-        { path: "createdBy", model: "User" },
-        { path: "categories", model: "Tag" }
-      ]);
-      return posts;
-    },
-
-    /*
-|--------------------------------------------------------------------------
-|                    QUERIES   USER
-|--------------------------------------------------------------------------
-*/
-    getCurrentUser: async (_, args, { User, currentUser }) => {
-      if (!currentUser) {
-        return null;
-      }
-      const user = await User.findOne({
-        username: currentUser.username
-      }).populate({
-        path: "favorites",
-        model: "Post"
-      });
-
-      return user;
-    },
-    /*
-|--------------------------------------------------------------------------
-|                     QUERIES  TAGS
-|--------------------------------------------------------------------------
-*/
-    getTags: async (_, args, { Tag }) => {
-      const tags = await Tag.find({});
-      return tags;
-    }
-  },
-
   /*
 |--------------------------------------------------------------------------
 |                     MUTATION   POSTS
 |--------------------------------------------------------------------------
 */
   Mutation: {
-    addPost: async (
-      _,
-      { title, imageUrl, description, categories, newTagsLabels, creatorId },
-      { Post, Tag }
-    ) => {
+    addPost: async (_, { post }, { Post, Tag }) => {
+      const {
+        title,
+        imageUrl,
+        description,
+        categories,
+        content,
+        newTagsLabels,
+        creatorId
+      } = post;
       const tags = categories;
       for (const tag of newTagsLabels) {
         const newTag = await new Tag({ label: tag, color: "primary" }).save();
@@ -139,6 +33,7 @@ module.exports = {
         title,
         imageUrl,
         description,
+        content,
         categories: tags,
         createdBy: creatorId
       }).save();
@@ -151,20 +46,15 @@ module.exports = {
       const user = await User.findOne({
         username: currentUser.username
       });
-      console.log("user", user);
       const post = await Post.findById(postId);
-      console.log("post", post);
       if (!post) {
         throw new Error("No post found");
       }
       if (!post.createdBy.equals(user._id)) {
-        console.log("post createdBy", post.createdBy);
-        console.log("userId", user._id);
         throw new Error("Unauthorized : must be creator to delete post");
       }
 
       const deletedPost = await Post.deleteOne({ _id: postId });
-      console.log(deletedPost);
       if (deletedPost.deletedCount === 1) {
         return postId;
       } else {
@@ -242,6 +132,54 @@ module.exports = {
 
     /*
 |--------------------------------------------------------------------------
+|                     MUTATION   POSTS
+|--------------------------------------------------------------------------
+*/
+
+    addProfile: async (_, { profile }, { Tag, User, Profile, currentUser }) => {
+      if (!currentUser) {
+        return new Error(
+          "Unauthorized : must be signed in to register a new Profile"
+        );
+      }
+      const { userId } = profile;
+      const user = await User.findOne({ _id: userId });
+      const newProfile = await new Profile({
+        user,
+        ...profile
+      }).save();
+
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        { $set: { profile: newProfile } }
+      );
+      return newProfile;
+    },
+
+    updateProfile: async (
+      _,
+      { profile },
+      { User, Profile, Tag, currentUser }
+    ) => {
+      if (!currentUser) {
+        return new Error(
+          "Unauthorized : must be signed in to register a new Profile"
+        );
+      }
+      const { profileId, userId, ...fields } = profile;
+      const updatedprofile = await Profile.findOneAndUpdate(
+        { _id: profileId },
+        { ...fields },
+        { new: true }
+      ).populate([
+        { path: "user", model: "User" },
+        { path: "friends", model: "User" },
+        { path: "subscriptions", model: "Tag" }
+      ]);
+      return updatedprofile;
+    },
+    /*
+|--------------------------------------------------------------------------
 |                  MUTATION TAGS
 |--------------------------------------------------------------------------
 */
@@ -258,6 +196,139 @@ module.exports = {
         color
       }).save();
       return newTag;
+    }
+  },
+  Query: {
+    /*
+|--------------------------------------------------------------------------
+|                      QUERIES POSTS
+|--------------------------------------------------------------------------
+*/
+    getPosts: async (_, { limit }, { Post }) => {
+      const posts = Post.find({})
+        .limit(limit)
+        .sort({ createdDate: "desc" })
+        .populate([
+          {
+            path: "createdBy",
+            model: "User"
+          },
+          { path: "messages.messageUser", model: "User" }
+        ]);
+      return posts;
+    },
+    getPostById: async (_, { postId }, { currentUser, Post, Tag }) => {
+      const post = await Post.findById(postId).populate([
+        {
+          path: "createdBy",
+          model: "User"
+        },
+        {
+          path: "categories",
+          model: "Tag"
+        },
+        { path: "messages.messageUser", model: "User" }
+      ]);
+      return post;
+    },
+    infiniteScrollPosts: async (_, { pageNum, pageSize }, { Post }) => {
+      let posts;
+      if (pageNum === 1) {
+        posts = await Post.find({})
+          .sort({ createdDate: "desc" })
+          .populate([
+            { path: "createdBy", model: "User" },
+            { path: "messages.messageUser", model: "User" }
+          ])
+          .limit(pageSize);
+      } else {
+        const skips = pageSize * (pageNum - 1);
+        posts = await Post.find({})
+          .sort({ createdDate: "desc" })
+          .skip(skips)
+          .populate({ path: "createdBy", model: "User" })
+          .limit(pageSize);
+      }
+
+      const totalDocs = await Post.countDocuments();
+      const hasMore = totalDocs > pageSize * pageNum;
+      return { posts, hasMore };
+    },
+    searchPosts: async (_, { searchTerm }, { Post }) => {
+      if (searchTerm) {
+        const searchResults = await Post.find(
+          { $text: { $search: searchTerm } },
+          { score: { $meta: "textScore" } }
+        )
+          .sort({
+            score: { $meta: "textScore" },
+            likes: "desc"
+          })
+          .limit(5);
+        return searchResults;
+      }
+    },
+
+    getFavoritePosts: async (_, { userId }, { Post }) => {
+      const posts = await Post.find({ likes: userId }).populate([
+        { path: "createdBy", model: "User" },
+        { path: "categories", model: "Tag" }
+      ]);
+      return posts;
+    },
+
+    /*
+|--------------------------------------------------------------------------
+|                    QUERIES   USER
+|--------------------------------------------------------------------------
+*/
+    getCurrentUser: async (_, args, { User, currentUser }) => {
+      if (!currentUser) {
+        return null;
+      }
+      const user = await User.findOne({
+        username: currentUser.username
+      }).populate([
+        {
+          path: "favorites",
+          model: "Post"
+        },
+        { path: "profile", model: "Profile" }
+      ]);
+
+      return user;
+    },
+
+    /*
+|--------------------------------------------------------------------------
+|                     QUERIES  PROFILES
+|--------------------------------------------------------------------------
+*/
+    profileByUserId: async (_, { userId }, { Profile }) => {
+      const profile = await Profile.findOne({ user: userId }).populate([
+        { path: "user", model: "User" },
+        { path: "friends", model: "User" },
+        { path: "subscriptions", model: "Tag" }
+      ]);
+      return profile;
+    },
+    profileById: async (_, { profileId }, { Profile }) => {
+      const profile = await Profile.findById(profileId).populate([
+        { path: "user", model: "User" },
+        { path: "friends", model: "User" },
+        { path: "subscriptions", model: "Tag" }
+      ]);
+      return profile;
+    },
+
+    /*
+|--------------------------------------------------------------------------
+|                     QUERIES  TAGS
+|--------------------------------------------------------------------------
+*/
+    getTags: async (_, args, { Tag }) => {
+      const tags = await Tag.find({});
+      return tags;
     }
   }
 };

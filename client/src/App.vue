@@ -8,7 +8,11 @@
       fixed
       class="secondary"
     >
-      <v-toolbar color="secondary" flat dark>
+      <v-toolbar
+        color="secondary"
+        flat
+        dark
+      >
         <v-toolbar-side-icon @click="sideNav = !sideNav" />
         <router-link
           to="/"
@@ -54,11 +58,19 @@
     </v-navigation-drawer>
 
     <!-- Horizontal Navbar -->
-    <v-toolbar fixed color="primary" dark>
+    <v-toolbar
+      fixed
+      color="primary"
+      dark
+    >
       <!-- App Title -->
       <v-toolbar-side-icon @click="sideNav = !sideNav" />
       <v-toolbar-title class="hidden-xs-only">
-        <router-link to="/" tag="span" style="cursor: pointer">
+        <router-link
+          to="/"
+          tag="span"
+          style="cursor: pointer"
+        >
           <IconCloud class="icon icon-big icon-info" />
         </router-link>
       </v-toolbar-title>
@@ -67,17 +79,21 @@
 
       <!-- Search Input -->
       <v-text-field
-        flex
         v-model="searchTerm"
-        @input="handleSearchPosts"
+        flex
         prepend-icon="search"
         placeholder="Search posts"
         color="accent"
         single-line
         hide-details
+        @input="handleSearchPosts"
       />
 
-      <v-card dark class="searchResultsCard" v-if="searchResults.length">
+      <v-card
+        v-if="searchResults.length"
+        dark
+        class="searchResultsCard"
+      >
         <v-list>
           <v-list-tile
             v-for="result in searchResults"
@@ -104,7 +120,10 @@
           flat
           :to="item.link"
         >
-          <v-icon class="hidden-sm-only" left>
+          <v-icon
+            class="hidden-sm-only"
+            left
+          >
             {{ item.icon }}
           </v-icon>
           {{ item.title }}
@@ -112,11 +131,22 @@
       </v-toolbar-items>
 
       <!-- Profile Button -->
-      <v-btn v-if="isAuth" flat to="/profile" class="hidden-xs-only">
-        <v-icon class="hidden-sm-only" left>
+      <v-btn
+        v-if="isAuth"
+        flat
+        to="/profile"
+        class="hidden-xs-only"
+      >
+        <v-icon
+          class="hidden-sm-only"
+          left
+        >
           account_box
         </v-icon>
-        <v-badge right color="blue darken-2">
+        <v-badge
+          right
+          color="blue darken-2"
+        >
           <template v-slot:badge>
             {{ favoritePosts.count }}
           </template>
@@ -131,7 +161,10 @@
         class="hidden-xs-only"
         @click="handleSignoutUser"
       >
-        <v-icon class="hidden-sm-only" left>
+        <v-icon
+          class="hidden-sm-only"
+          left
+        >
           exit_to_app
         </v-icon>
         Signout
@@ -139,33 +172,66 @@
     </v-toolbar>
 
     <!-- App Content -->
-    <main class="fill-height info">
+    <main class="fill-height pt-5 blue-grey lighten-4">
       <div class="appContainer">
         <transition name="fade">
           <router-view />
         </transition>
       </div>
       <template v-if="isSnackShown">
-        <v-snackbar v-model="showSnack" color="black" bottom center>
+        <v-snackbar
+          v-model="showSnack"
+          color="black"
+          bottom
+          center
+        >
           <h3 class="caption">
             {{ snackProps.message }}
           </h3>
-          <v-btn dark flat color="pink" @click="showSnack = !showSnack">
+          <v-btn
+            dark
+            flat
+            color="pink"
+            @click="showSnack = !showSnack"
+          >
             close
           </v-btn>
         </v-snackbar>
       </template>
 
-      <v-snackbar v-model="authSnackbar" color="success" bottom right>
-        <h3 class="caption">👌You're now signed in as {{ userName }}</h3>
-        <v-btn dark flat @click="authSnackbar = !authSnackbar">
+      <v-snackbar
+        v-model="authSnackbar"
+        color="success"
+        bottom
+        right
+      >
+        <h3 class="caption">
+          👌You're now signed in as {{ userName }}
+        </h3>
+        <v-btn
+          dark
+          flat
+          @click="authSnackbar = !authSnackbar"
+        >
           close
         </v-btn>
       </v-snackbar>
 
-      <v-snackbar v-model="authErrorSnackbar" color="error" bottom right>
-        <span v-if="authError" class="caption">🙈{{ authError.message }}</span>
-        <v-btn dark flat @click="authErrorSnackbar = !authErrorSnackbar">
+      <v-snackbar
+        v-model="authErrorSnackbar"
+        color="error"
+        bottom
+        right
+      >
+        <span
+          v-if="authError"
+          class="caption"
+        >🙈{{ authError.message }}</span>
+        <v-btn
+          dark
+          flat
+          @click="authErrorSnackbar = !authErrorSnackbar"
+        >
           close
         </v-btn>
       </v-snackbar>
@@ -184,6 +250,7 @@ export default {
   },
   data() {
     return {
+      isMobile: false,
       sideNav: false,
       authSnackbar: false,
       authErrorSnackbar: false,
@@ -266,11 +333,24 @@ export default {
     },
     formatDescriptionText(text) {
       return text.length > 50 ? `${text.slice(0, 50)}...` : text;
+    },
+    onResize() {
+      this.isMobile = window.innerWidth < 600;
+    }
+  },
+  mounted() {
+    this.onResize();
+    window.addEventListener("resize", this.onResize, { passive: true });
+  },
+  beforeDestroy() {
+    if (typeof window !== "undefined") {
+      window.removeEventListener("resize", this.onResize, { passive: true });
     }
   }
 };
 </script>
 <style lang="stylus">
+
 .fade-enter-active,
 .fade-leave-active
   transition-property all
@@ -292,10 +372,12 @@ export default {
 
 .info
   margin-top 64px
-  .appContainer
-    display flex
-    align-items flex-start
-    flex-direction row
+.appContainer
+  margin-top 2rem
+  padding 1rem
+  display flex
+  align-items flex-start
+  flex-direction row
 
 .searchResultsCard
   position absolute

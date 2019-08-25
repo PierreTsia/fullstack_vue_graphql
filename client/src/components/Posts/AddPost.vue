@@ -17,10 +17,11 @@
           required
         />
         <v-layout row wrap>
-          <v-flex xs5 class="uploadPreview">
+          <v-flex xs12>
             <UploadImage
               upload-preset="defaultPreset"
               cloud-name="dd9kfvzbg"
+              asset-type="post image"
               @uploaded="handleInputChange"
               @error="handleError"
             >
@@ -29,9 +30,9 @@
                   <!-- Uploaded image -->
                   <v-img
                     v-if="isUploaded"
-                    :max-height="150"
                     contain
                     :src="imgSrc"
+                    :max-width="300"
                   />
                 </div>
               </template>
@@ -49,6 +50,14 @@
           label="Description"
           value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
         />
+        <v-layout row wrap>
+          <v-flex xs12>
+            <h3 class="subheading mb-3">
+              Content
+            </h3>
+            <RichTextEditor @onContentChanged="handleContentChanged" />
+          </v-flex>
+        </v-layout>
         <v-layout row justify-end>
           <v-btn
             type="submit"
@@ -72,11 +81,13 @@
 import { mapGetters, mapActions } from "vuex";
 import UploadImage from "@/components/utils/UploadImage";
 import Combobox from "@/components/utils/Combobox";
+import RichTextEditor from "@/components/utils/RichTextEditor";
 export default {
   name: "AddPost",
   components: {
     UploadImage,
-    Combobox
+    Combobox,
+    RichTextEditor
   },
   data() {
     return {
@@ -85,6 +96,7 @@ export default {
       imageUrl: "",
       uploadedImage: null,
       categories: [],
+      content: "",
       options: [],
       valid: false,
       items: [],
@@ -118,22 +130,27 @@ export default {
       console.error(e);
     },
 
+    handleContentChanged(content) {
+      this.content = content;
+    },
+
     async handleTagsUpdate(tags) {
       this.categories = tags.map(tag => {
         return tag._id ? tag : { label: tag, color: "primary" };
       });
     },
-    handleAddPost() {
+    async handleAddPost() {
       if (this.$refs.form.validate() && this.imgSrc.length) {
-        const payload = {
+        const post = {
           title: this.title,
           description: this.description,
+          content: this.content,
           imageUrl: this.imgSrc,
           categories: this.categories.filter(c => c._id).map(c => c._id),
           newTagsLabels: this.categories.filter(c => !c._id).map(c => c.label),
           creatorId: this.me._id
         };
-        this.addPost(payload);
+        await this.addPost(post);
         this.$router.push("/posts");
       }
     }
@@ -146,5 +163,12 @@ export default {
 
 <style lang="stylus">
 .uploadPreview
-  display flex
+  .v-image
+    margin 0 auto
+  .v-btn
+    display block
+    margin 10px auto
+  .imgLoader
+    display block
+    margin 10px auto
 </style>

@@ -39,6 +39,7 @@ export const GET_POST_BY_ID = gql`
         color
       }
       description
+      content
       createdDate
       messages {
         _id
@@ -137,7 +138,7 @@ export const UNLIKE_POST = gql`
   }
 `;
 
-/* Tags Quries*/
+/* Tags Queries*/
 
 export const GET_TAGS = gql`
   query {
@@ -155,13 +156,37 @@ export const GET_CURRENT_USER = gql`
     getCurrentUser {
       _id
       username
-      email
       avatar
+      email
       joinDate
-      favorites {
+      profile {
         _id
-        title
-        imageUrl
+        bio
+        bannerUrl
+        DateOfBirth
+        country {
+          name
+          code
+        }
+        gender
+        friends {
+          _id
+          username
+          avatar
+        }
+        subscriptions {
+          _id
+          label
+          color
+        }
+        social {
+          youtube
+          linkedin
+          twitch
+          twitter
+          instagram
+          github
+        }
       }
     }
   }
@@ -169,22 +194,8 @@ export const GET_CURRENT_USER = gql`
 
 /* Posts Mutations */
 export const ADD_POST = gql`
-  mutation(
-    $title: String!
-    $imageUrl: String!
-    $categories: [ID]!
-    $newTagsLabels: [String]
-    $description: String!
-    $creatorId: ID!
-  ) {
-    addPost(
-      title: $title
-      imageUrl: $imageUrl
-      categories: $categories
-      newTagsLabels: $newTagsLabels
-      description: $description
-      creatorId: $creatorId
-    ) {
+  mutation($post: PostInput!) {
+    addPost(post: $post) {
       _id
       title
       createdBy {
@@ -196,6 +207,7 @@ export const ADD_POST = gql`
         color
       }
       description
+      content
       imageUrl
       likes
       messages {
@@ -243,6 +255,95 @@ export const SIGNUP_USER = gql`
   mutation($username: String!, $email: String!, $password: String!) {
     signupUser(username: $username, email: $email, password: $password) {
       token
+    }
+  }
+`;
+
+/* Profiles Queries */
+
+export const PROFILE_BY_USER_ID = gql`
+  query($userId: ID!) {
+    profileByUserId(userId: $userId) {
+      _id
+      bio
+      social {
+        youtube
+        linkedin
+      }
+      user {
+        _id
+        username
+      }
+    }
+  }
+`;
+
+export const PROFILE_BY_ID = gql`
+  query($profileId: ID!) {
+    profileById(profileId: $profileId) {
+      _id
+      user {
+        _id
+        username
+      }
+      bio
+      social {
+        youtube
+      }
+      subscriptions {
+        _id
+      }
+    }
+  }
+`;
+
+/* Profiles mutations */
+
+export const ADD_PROFILE = gql`
+  mutation($profile: ProfileInput!) {
+    addProfile(profile: $profile) {
+      _id
+      user {
+        _id
+        username
+      }
+      subscriptions {
+        _id
+        label
+      }
+      friends {
+        _id
+        username
+      }
+      bio
+      DateOfBirth
+      gender
+      social {
+        linkedin
+        youtube
+      }
+    }
+  }
+`;
+
+export const UPDATE_PROFILE = gql`
+  mutation($profile: ProfileInput) {
+    updateProfile(profile: $profile) {
+      _id
+      gender
+      user {
+        _id
+        username
+      }
+      country {
+        name
+      }
+      bio
+      social {
+        youtube
+        linkedin
+        twitch
+      }
     }
   }
 `;

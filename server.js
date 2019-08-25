@@ -3,6 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
+const Profile = require("./models/Profile");
+
 const Post = require("./models/Post");
 const Tag = require("./models/Tag");
 
@@ -16,7 +18,7 @@ const mongoose = require("mongoose");
 mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true })
   .then(() => {
-    console.log("db connected");
+    console.log("💾 💾 Database connected");
   })
   .catch(e => {
     console.log(e);
@@ -29,7 +31,7 @@ const getUser = async token => {
       return user;
     } catch (e) {
       throw new AuthenticationError(
-        "Your session has expired. Please sign in again."
+        "🚷 🚷 Your session has expired. Please sign in again."
       );
     }
   }
@@ -45,11 +47,12 @@ const server = new ApolloServer({
   context: async ({ req }) => ({
     currentUser: await getUser(req.headers.authorization),
     User,
+    Profile,
     Post,
     Tag
   })
 });
 
 server.listen().then(({ url }) => {
-  console.log(`server listening on ${url}`);
+  console.log(`🚀 🚀 Server listening on ${url}`);
 });
